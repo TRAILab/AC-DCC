@@ -1,2 +1,2 @@
 # AC-DCC
-Code for Paper : AC/DCC  :  Accurate  Calibration  of  Dynamic  Camera  Clusters  forVisual  SLAM
+Code for IJRR Paper : AC/DCC  :  Accurate  Calibration  of  Dynamic  Camera  Clusters  forVisual  SLAM
