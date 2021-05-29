@@ -23,6 +23,7 @@ classdef Transformation<handle
         
             input_vector = reshape(input_vector,[3,1]);
             transformed = obj.transform(input_vector);
+            transformed = reshape(transformed, [1,3]);
             
             % Jacobian calculation
             r = obj.matrix(1:3,1:3)*(input_vector);

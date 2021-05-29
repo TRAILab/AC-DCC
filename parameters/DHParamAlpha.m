@@ -1,9 +1,6 @@
 classdef DHParamAlpha<handle
-    %TRANSFORMATIONPARAMETER Summary of this class goes here
-    %   Detailed explanation goes here
     
     properties
-        % Internal storage
         value;
     end
     
@@ -13,13 +10,13 @@ classdef DHParamAlpha<handle
             obj.value = init_value;
         end
         
-        
         function [] = manifoldPlus(obj,perturbation)
-            obj.value = obj.value+ perturbation;
+            obj.value = obj.value + perturbation;
         end
         
-        function [J_alpha] = getJacobian(obj, theta, d, r,input_vector )
-            [ J_alpha ] = alphaJacobian( theta, d, r,obj.value,input_vector );
+        function [J_alpha] = getJacobian(obj, theta, d, r, alpha)
+            all_jacobians = DHJacobians(theta, d, r, obj.value);
+            J_alpha = all_jacobians(:,4);
         end
     end
 end

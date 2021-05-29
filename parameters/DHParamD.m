@@ -14,8 +14,9 @@ classdef DHParamD<handle
             obj.value = obj.value + perturbation;
         end
         
-        function [J_d] = getJacobian(obj,theta, r,alpha,input_vector )
-            [ J_d ] = dJacobian(theta, obj.value, r, alpha, input_vector);
+        function [J_d] = getJacobian(obj, theta, d, r, alpha)
+            all_jacobians = DHJacobians(theta, obj.value, r, alpha);
+            J_d = all_jacobians(:,2);
         end
     end
 end
