@@ -25,7 +25,7 @@ transformation_noise.rot.std_dev = 0;
 optimize_theta_flag_vec = [0 0 0];      % Which angles will be added with noise (0: no noise added, 1: noise added)
 use_random_pts = 1;                     % Use random points in the environment (1) or a target (0)
 angle_type = 'random';                  % Type of angles we want, (linear, random)
-num_random_angles = 30;                  % Number of random angles if random angle type
+num_random_angles = 10;                  % Number of random angles if random angle type
 joint_angle_limits = [-170 170;           % Angle Limits from which to collect measurements (deg). This should be a Nx2, where N = num of joints 
                       -30 30; 
                       -120 40];        

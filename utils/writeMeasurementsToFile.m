@@ -35,7 +35,6 @@ for i=1:size(encoder_angles_rad,1)
 %     end
     
     % Display the object. Returns transforms for use at other places
-    %[w_T_s_list, w_T_g, ~, ~, ~] = displaySimulationObject(sim_obj, noisy_encoder_angles_rad, []);
     [T_WC_list, ~, ~, ~] = displaySimulationObject(sim_obj, noisy_encoder_angles_rad, opt_problem);
     
     cam_T_target_list = {};
