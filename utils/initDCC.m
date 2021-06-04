@@ -20,10 +20,13 @@ end
 
 % Store the number of DH links in the simulation object
 dcc_obj.num_DH_links = 0;
+optimize_theta_flag_vec = [];
 for i=1:length(link_struct)
     if strcmp(link_struct(i).type,'dh')
         dcc_obj.num_DH_links = dcc_obj.num_DH_links + 1;
     end
+    optimize_theta_flag_vec = [optimize_theta_flag_vec link_struct(i).opt_theta];
 end
+dcc_obj.optimize_theta_flag_vec = optimize_theta_flag_vec;
 
 assert(dcc_obj.num_DH_links + length(dcc_obj.cameras) == length(link_struct), 'There is a mismatch between number of links and camera parameters');

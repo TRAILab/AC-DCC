@@ -22,12 +22,25 @@ classdef ParameterContainer<handle
         
         function [idx] = getKeyIndex(obj,key)
             
-            if(isKey(obj.parameter_key_map,key))
+            if isKey(obj.parameter_key_map,key)
                 idx = obj.parameter_key_map(key);
             else
                 error('parameter_container::key not found!');
             end
             
+        end
+        
+        function [value] = getKeyValue(obj,key)
+            if isKey(obj.parameter_key_map, key)
+                idx = obj.parameter_key_map(key);
+                if strcmp(class(obj.parameter_list{idx}.parameter), 'Transformation')
+                    value = obj.parameter_list{idx}.parameter.matrix;
+                else
+                    value = obj.parameter_list{idx}.parameter.value;
+                end
+            else
+                error('parameter_container::key not found!');
+            end
         end
     end
     

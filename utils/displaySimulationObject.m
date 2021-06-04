@@ -1,11 +1,19 @@
-function [T_WC_list, ax, title_str, f] = displaySimulationObject(sim_obj, encoder_angles, opt_problem)
+function T_WC_list = displaySimulationObject(sim_obj, encoder_angles, opt_problem)
 
-title_str = '';
-transforms = sim_obj.transforms;
+title_str = 'Dynamic Camera Cluster';
 num_dh_links = sim_obj.num_DH_links;
 
-f = figure(1);
-set(f, 'Visible', 'on');
+if isfield(sim_obj,'transforms')
+    transforms = sim_obj.transforms;
+else
+    transforms.world = eye(4);
+    transforms.world_T_base = [1 0 0 0; 
+                               0 -1 0 0;
+                               0 0 -1 0;
+                               0 0 0 1];
+end
+
+callFigure(title_str);
 clf()
 
 colors = ['c','m','r','g','y','b','k','c','y','r','g','b','m','k'];
@@ -58,12 +66,12 @@ plotAxis(T_WG, 0.3, colors(color_num),'d')
 % Get all the transforms from cameras to world
 T_WC_list = [{T_WG} T_WS_list];
 
-hold on;
-temp_target_pts_world = sim_obj.target_pts_world;
-if ~sim_obj.use_random_points
-    scatter3(temp_target_pts_world(:,1), temp_target_pts_world(:,2), temp_target_pts_world(:,3), 'filled','k');
+if isfield(sim_obj,'target_pts_world')
+    hold on;
+    temp_target_pts_world = sim_obj.target_pts_world;
+    if ~sim_obj.use_random_points
+        scatter3(temp_target_pts_world(:,1), temp_target_pts_world(:,2), temp_target_pts_world(:,3), 'filled','k');
+    end
+    plotAxis(sim_obj.transforms.world_T_target, 0.2, 'k', 'T');
 end
-plotAxis(sim_obj.transforms.world_T_target, 0.2, 'k', 'T');
-
-ax = gca;
-%view(simulation_object.caz, simulation_object.cel);
+title(title_str);

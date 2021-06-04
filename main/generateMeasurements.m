@@ -25,16 +25,16 @@ transformation_noise.rot.std_dev = 0;
 optimize_theta_flag_vec = [0 0 0];      % Which angles will be added with noise (0: no noise added, 1: noise added)
 use_random_pts = 1;                     % Use random points in the environment (1) or a target (0)
 angle_type = 'random';                  % Type of angles we want, (linear, random)
-num_random_angles = 10;                  % Number of random angles if random angle type
+num_random_angles = 30;                  % Number of random angles if random angle type
 joint_angle_limits = [-170 170;           % Angle Limits from which to collect measurements (deg). This should be a Nx2, where N = num of joints 
-                      -30 30; 
-                      -120 40];        
+                      -170 170; 
+                      -170 170];        
 num_linear_angles_per_joint = [4;4;5];  % Number of angles per joint to collect measurements if linear angle type. This should be an Nx1 where N = num of joints.   
 move_base = 0;                          % Decide if you want to move the drone
 evaluation_flag = 0;                    % Are we performing the evaluation of the calibration
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_5_cam/';
+data_files.folder_path = 'data/test_3_cam/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');

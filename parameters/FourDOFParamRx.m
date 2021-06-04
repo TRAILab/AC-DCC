@@ -9,7 +9,7 @@ classdef FourDOFParamRx<handle
     
     methods
         
-        function [obj] = Rx4DofParam(init_value)
+        function [obj] = FourDOFParamRx(init_value)
             obj.value = init_value;
         end
         

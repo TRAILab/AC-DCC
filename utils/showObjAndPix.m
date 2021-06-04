@@ -10,7 +10,7 @@ opt_problem = setupOptimizationProblem(simulation_object, []);
 for i=1:size(encoder_angles_rad,1)
     
     % Display the object. Returns transforms for use at other places
-    [T_WC_list, ~, ~, ~] = displaySimulationObject(simulation_object, encoder_angles_rad(i,:), opt_problem);
+    T_WC_list = displaySimulationObject(simulation_object, encoder_angles_rad(i,:), opt_problem);
     
     % Create figures for points that fall on the camera frames
     for j=1:length(simulation_object.cameras)
@@ -25,9 +25,9 @@ for i=1:size(encoder_angles_rad,1)
     
     % Display all figures in single plot
     if isempty(findobj('type','figure','name','all_pixels'))
-        f = figure('Name','all_pixels');
+        figure('Name','all_pixels');
     else
-        f = figure(findobj('type','figure','name','all_pixels').Number);
+        figure(findobj('type','figure','name','all_pixels').Number);
     end
     clf; 
     num_rows = ceil(length(simulation_object.cameras)/3);

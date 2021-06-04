@@ -9,7 +9,13 @@ classdef Transformation<handle
     methods
         
         function [obj] = Transformation(pose_params)
-            obj.matrix = vec2tran(pose_params');
+            % If pose_params is a vector
+            if length(pose_params)==6
+                obj.matrix = vec2tran(pose_params');
+            % If pose_params is a matrix
+            elseif length(pose_params)==4
+                obj.matrix = pose_params;
+            end
         end
         
         function r = transform(obj, input_vector)

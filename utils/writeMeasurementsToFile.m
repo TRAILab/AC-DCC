@@ -10,6 +10,7 @@ optimize_theta_flag_vec = sim_obj.optimize_theta_flag_vec;
 successful_measurement_collection_flag = zeros(size(input_angles,1),1);
 noisy_encoder_angles_rad_list = zeros(size(input_angles));
 bad_measurement_num = [];
+all_measurement_pixel_error_mean = zeros(size(encoder_angles_rad,1),length(sim_obj.cameras));
 
 opt_problem = setupOptimizationProblem(sim_obj, []);
 
@@ -35,7 +36,7 @@ for i=1:size(encoder_angles_rad,1)
 %     end
     
     % Display the object. Returns transforms for use at other places
-    [T_WC_list, ~, ~, ~] = displaySimulationObject(sim_obj, noisy_encoder_angles_rad, opt_problem);
+    T_WC_list = displaySimulationObject(sim_obj, noisy_encoder_angles_rad, opt_problem);
     
     cam_T_target_list = {};
     cam_success_list = [];
@@ -82,6 +83,7 @@ for i=1:size(encoder_angles_rad,1)
         
         disp(strcat('Average error on: ', sim_obj.cameras{c}.sensor_name,'=',num2str(L2_error.mean)));
         disp(' ');
+        all_measurement_pixel_error_mean(i,c) = L2_error.mean;
     end
     
     % Write measurement to file.
@@ -118,3 +120,15 @@ fileID = fopen(complete_path,'wt');
 fprintf(fileID,'True encoder values\n');
 writematrix(noisy_encoder_angles_rad_list, complete_path);
 fclose(fileID);
+
+%% Plot the figure of the mean reprojection error for each measurment and camera
+for i=1:length(sim_obj.cameras)
+    callFigure('Measurement Set Reproj Error');
+    subplot(length(sim_obj.cameras), 1, i);
+    bar(all_measurement_pixel_error_mean(:,i));
+    hold on;
+    xticks(1:2:length(all_measurement_pixel_error_mean));
+    temp_cam_name = string(sim_obj.cameras{i}.sensor_name);
+    temp_cam_name = join(split(temp_cam_name,'_'));
+    title([strcat('Avg pix error for each measurement set for:- ',temp_cam_name),strcat(' is mean: ', num2str(mean(all_measurement_pixel_error_mean(:,i))), ' and std: ', num2str(std(all_measurement_pixel_error_mean(:,i))))]);
+end

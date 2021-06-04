@@ -29,7 +29,7 @@ move_base = 0;                          % Decide if you want to move the drone
 evaluation_flag = 0;                    % Are we performing the evaluation of the calibration
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_5_cam/';
+data_files.folder_path = 'data/test_3_cam/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
@@ -64,8 +64,6 @@ for i=1:length(dsc_obj.link_struct)
 end
 
 % Initial display
-comb_fig = figure('Name','comb_fig');
-figure(comb_fig);
 showObjAndPix(dsc_obj, input_angles);
 
 % Setup UI

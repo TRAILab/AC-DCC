@@ -18,33 +18,29 @@ classdef Problem<handle
             obj.parameter_container = parameter_container;
         end
         
-        function [] =  addResidual(obj, type,key_list,measurement_struct,camera)
+        function [] = addUnaryReprojectionResidual(obj, key_list, measurement_struct, camera)
             
-            if(strcmp(type,'UnaryReprojection'))
-                % since it's a unary factor, should just have 1 key
-                key = key_list(1);
-                
-                point_meas = measurement_struct{1};
-                pixel_meas = measurement_struct{2};
-                
-                parameter_object = obj.parameter_container.parameter_list{key};
-                parameter_value = parameter_object.parameter;
-                [residual, J_T] = reprojectionErrorResidual(camera, parameter_value,point_meas,pixel_meas);
-                
-                %only add this residual if valid
-                if(~isempty(residual))
-                    meas_size = length(residual);
-                    % append the residual vector
-                    obj.r = [obj.r; residual];
-                    % append the jacobian matrix
-                    row_index = size(obj.J,1)+1;
-                    column_index = parameter_object.column_idx;
-                    column_size = parameter_object.tangentspace_dim;
-                    obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J_T;
-                end   
-            else
-                error('Unknown residual type')
-            end
+            % since it's a unary factor, should just have 1 key
+            key = key_list(1);
+
+            point_meas = measurement_struct{1};
+            pixel_meas = measurement_struct{2};
+
+            parameter_object = obj.parameter_container.parameter_list{key};
+            parameter_value = parameter_object.parameter;
+            [residual, J_T] = reprojectionErrorResidual(camera, parameter_value,point_meas,pixel_meas);
+
+            %only add this residual if valid
+            if(~isempty(residual))
+                meas_size = length(residual);
+                % append the residual vector
+                obj.r = [obj.r; residual];
+                % append the jacobian matrix
+                row_index = size(obj.J,1)+1;
+                column_index = parameter_object.column_idx;
+                column_size = parameter_object.tangentspace_dim;
+                obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J_T;
+            end   
         end
         
         function [] = addPoseLoopResidual(obj, measurement_struct, configuration_object)
@@ -86,8 +82,8 @@ classdef Problem<handle
             
         end
         
-        function [avg_pixel_error, det_info_mat] = addDCCResidualPoseLoop(obj, measurement_struct, simulation_object)
-            [residual_vector, J_total, avg_pixel_error, ~] = DCCResidualOneWayPoseLoop(obj.parameter_container, measurement_struct, simulation_object);
+        function [avg_pixel_error, det_info_mat] = addDCCPoseLoopResidual(obj, measurement_struct, simulation_object)
+            [residual_vector, J_total, avg_pixel_error] = DCCPoseLoopResidual(obj.parameter_container, measurement_struct, simulation_object);
             
             % Rearrange Jacobian. Because it doesnt account for which
             % static camera is being considered
@@ -109,56 +105,6 @@ classdef Problem<handle
             % append the jacobian matrix
             %obj.J = [obj.J; J_whiten];
             obj.J = [obj.J; J_total];
-        end
-        
-        function [] = addDCCCovariancePoseloopResidual(obj)
-            
-            % residual of the form: I - inv(T_S_WS.matrix)*T_S_M.matrix*T_M_WM.matrix
-            T_I = Transformation([0 0 0 0 0 0]);
-            p_M_WM = obj.parameter_container.parameter_list{1};
-            p_S_WS = obj.parameter_container.parameter_list{2};
-            p_S_M = obj.parameter_container.parameter_list{3};
-            
-            T_S_WS = p_S_WS.parameter;
-            T_M_WM = p_M_WM.parameter;
-            T_S_M = p_S_M.parameter;
-            
-            % Jacobian calculations
-            [T_S_MW, J_left, J_right] = T_S_M.composeAndJacobian(T_M_WM);
-            [T_WS_S, J_inv] = T_S_WS.inverseAndJacobian();
-            [T_WS_MW, J_left2, J_right2] = T_WS_S.composeAndJacobian(T_S_MW);
-            
-            [residual, ~, Jmm] = T_I.manifoldMinusAndJacobian(T_WS_MW);
-            meas_size = length(residual);
-            
-            % Jacobian wrt param1
-            J1 = Jmm*J_left2*J_inv;
-            
-            % Jacobian wrt param2
-            J2 = Jmm*J_right2*J_right;
-            
-            % Jacobian wrt param3
-            J3 = Jmm*J_right2*J_left;
-            
-            % append the residual vector
-            obj.r = [obj.r; residual];
-            row_index = size(obj.J,1)+1;
-            
-            % Append the Jacobians
-            % J1
-            column_index = p_S_WS.column_idx;
-            column_size = p_S_WS.tangentspace_dim;
-            obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J1;
-            
-            % J2
-            column_index = p_M_WM.column_idx;
-            column_size = p_M_WM.tangentspace_dim;
-            obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J2;
-            
-            % J3
-            column_index = p_S_M.column_idx;
-            column_size = p_S_M.tangentspace_dim;
-            obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J3; 
         end
          
         function update_delta = solveLinearSystem(obj)

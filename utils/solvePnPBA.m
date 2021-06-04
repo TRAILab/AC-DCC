@@ -30,7 +30,7 @@ for i=1:max_iterations
     % Add all the residual terms.
     for j=1:num_points
         measurement_struct = {target_pts_3D(j,:) pixels(j,:)};
-        opt_problem.addResidual('UnaryReprojection', 1, measurement_struct, camera_object);
+        opt_problem.addUnaryReprojectionResidual(1, measurement_struct, camera_object);
     end
     
     % solve the linear system.

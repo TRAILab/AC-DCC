@@ -9,7 +9,7 @@ classdef FourDOFParamTx<handle
     
     methods
         
-        function [obj] = Tx4DofParam(init_value)
+        function [obj] = FourDOFParamTx(init_value)
             obj.value = init_value;
         end
         
