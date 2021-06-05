@@ -33,7 +33,7 @@ classdef ParameterContainer<handle
         function [value] = getKeyValue(obj,key)
             if isKey(obj.parameter_key_map, key)
                 idx = obj.parameter_key_map(key);
-                if strcmp(class(obj.parameter_list{idx}.parameter), 'Transformation')
+                if isa(obj.parameter_list{idx}.parameter,'Transformation')
                     value = obj.parameter_list{idx}.parameter.matrix;
                 else
                     value = obj.parameter_list{idx}.parameter.value;

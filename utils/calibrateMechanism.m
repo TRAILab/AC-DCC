@@ -14,18 +14,17 @@ num_static_cameras = length(dcc_obj.cameras);
 
 for i=1:max_iterations
     measurement_avg_pixel_error = zeros(num_static_cameras, num_measurement_sets);
-    measurement_det_info_mat = zeros(num_static_cameras, num_measurement_sets);
     
     % Add all the residual terms.
     for j=1:num_measurement_sets
+        j
         measurement_struct = measurement_set{j};
         measurement_struct.num = j;
         measurement_struct.total_num = num_measurement_sets;
-        for c=1:num_static_cameras
+        for c=1:num_static_cameras-1
             dcc_obj.static_cam_key = strcat('T_S',num2str(c),'B');
             if ~isempty(measurement_struct.T_SM{c})
-                [avg_pixel_error, ~] = opt_problem.addDCCPoseLoopResidual(measurement_struct, dcc_obj);
-                measurement_avg_pixel_error(c,j) = avg_pixel_error;
+                opt_problem.addDCCPoseLoopResidual(measurement_struct, dcc_obj);
             end
         end
         if length(dcc_obj.cameras)>=3 && dcc_obj.add_identity_residual
@@ -86,17 +85,6 @@ for i=1:max_iterations
             end
         end
         
-        if dcc_obj.show_residual_values && dcc_obj.add_prior_joint_angles
-            figure(5);
-            clf;
-            num_non_theta_values = length(opt_problem.r) - length(theta_error_vec);
-            mag_non_theta_residuals = mean(abs(opt_problem.r(1:num_non_theta_values,1)));
-            mag_theta_residuals = mean(abs(opt_problem.r(num_non_theta_values+1:end,1)));
-            bar([mag_non_theta_residuals mag_theta_residuals]);
-            title('Magnitude of residuals');
-            legend('Non-theta ; theta');
-        end
-        
     end
    
     J = opt_problem.J;
@@ -106,8 +94,6 @@ for i=1:max_iterations
         pause_flag = 0;
     end
     
-    %[linearly_indep_col_set, remove_cols] = determine_linealy_indep_cols(opt_problem.J);
-    %validateDegeneracies(simulation_object, opt_problem, measurement_set);
     assert(rank(opt_problem.J)==size(opt_problem.J,2), strcat('The jacobian is rank deficient. Column size: ', ...
         num2str(size(opt_problem.J,2)),' but rank is: ',num2str(rank(opt_problem.J))));
     

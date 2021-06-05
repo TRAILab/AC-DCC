@@ -82,29 +82,14 @@ classdef Problem<handle
             
         end
         
-        function [avg_pixel_error, det_info_mat] = addDCCPoseLoopResidual(obj, measurement_struct, simulation_object)
-            [residual_vector, J_total, avg_pixel_error] = DCCPoseLoopResidual(obj.parameter_container, measurement_struct, simulation_object);
+        function [] = addDCCPoseLoopResidual(obj, measurement_struct, dcc_obj)
+            [residual_whitened, J_params, J_thetas] = DCCPoseLoopResidual(obj.parameter_container, measurement_struct, dcc_obj);
             
-            % Rearrange Jacobian. Because it doesnt account for which
-            % static camera is being considered
-            J_total = rearrange_non_theta_jacobian(simulation_object, obj.parameter_container, J_total);
-            
-            % compute the relative pose covariance
-            cov_mat = computeRelativePoseCovariance(simulation_object, measurement_struct);
-            info_mat = inv(cov_mat);
-            det_info_mat = det(info_mat);
-            
-            % Perform whitening
-            %[r_whiten, J_whiten] = prewhiten_residual(residual_vector, J_total, info_mat);
-            %assert(rank(J_whiten) == size(J_whiten,2))
-            
-            % append the residual vector
-            %obj.r = [obj.r; r_whiten];
-            obj.r = [obj.r; residual_vector];
-            
-            % append the jacobian matrix
-            %obj.J = [obj.J; J_whiten];
-            obj.J = [obj.J; J_total];
+            % Rearrange Jacobian. Because it doesnt account for which static camera is being considered
+            J_rearranged = rearrangeJacobians(dcc_obj, J_params);
+
+            obj.r = [obj.r; residual_whitened];
+            obj.J = [obj.J; [J_rearranged J_thetas]];
         end
          
         function update_delta = solveLinearSystem(obj)
