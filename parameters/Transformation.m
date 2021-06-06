@@ -15,6 +15,8 @@ classdef Transformation<handle
             % If pose_params is a matrix
             elseif length(pose_params)==4
                 obj.matrix = pose_params;
+            else
+                disp('Wrong input length');
             end
         end
         
@@ -43,8 +45,7 @@ classdef Transformation<handle
         
         function [composed, J_obj, J_in] = composeAndJacobian(obj,input_transform)
            
-            composed = Transformation([0 0 0 0 0 0]);
-            composed.matrix = obj.matrix*input_transform.matrix;
+            composed = Transformation(obj.matrix*input_transform.matrix);
             % Jacobian wrt the object
             J_obj = zeros(6,6);
             J_obj(1:3,1:3) = eye(3);
@@ -78,10 +79,8 @@ classdef Transformation<handle
         
         function [difference] = manifoldMinus(obj, input_transformation)
             % compute the boxminus for the rotations
-            R_obj = Rotation([0 0 0]);
-            R_obj.matrix = obj.matrix(1:3,1:3);
-            R_in =  Rotation([0 0 0]);
-            R_in.matrix = input_transformation.matrix(1:3,1:3);
+            R_obj = Rotation(obj.matrix(1:3,1:3));
+            R_in =  Rotation(input_transformation.matrix(1:3,1:3));
             diff_rot = R_obj.manifoldMinus(R_in);
             
             %transformation difference is just vector diff
@@ -93,10 +92,8 @@ classdef Transformation<handle
         function [difference, J_left, J_right] = manifoldMinusAndJacobian(obj, T_right)
             difference = obj.manifoldMinus(T_right);
             %compute Jacobians
-            R1 = Rotation([0 0 0]);
-            R2 = Rotation([0 0 0]);
-            R1.matrix = obj.matrix(1:3,1:3);
-            R2.matrix = T_right.matrix(1:3,1:3);
+            R1 = Rotation(obj.matrix(1:3,1:3));
+            R2 = Rotation(T_right.matrix(1:3,1:3));
             [~, J_R_left, J_R_right] = R1.manifoldMinusAndJacobian(R2);
             % Left Jacobian
             J_left = zeros(6,6);

@@ -17,7 +17,7 @@ validateattributes(T,{'double'},{'size',[4,4]});
 rotValidate(T(1:3,1:3));
 
 err = max(abs( [0,0,0,1] - T(4,:) ) );
-if err > 1e-10
+if err > 1e-7
     error('tranValidate.m:  the bottom row of the transformation matrix should be [0,0,0,1]. Error: %f', err)
 end
 

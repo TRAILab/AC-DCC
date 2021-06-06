@@ -32,66 +32,14 @@ for i=1:max_iterations
         end
     end
     
-    plot_pixel_error_stats(dcc_obj, measurement_avg_pixel_error);
-    if mod(i,10)==1 && dcc_obj.show_real_world_images
-        display_real_world_pixel_error(dcc_obj, opt_problem, measurement_set, measurement_avg_pixel_error);
-    end
+%     plot_pixel_error_stats(dcc_obj, measurement_avg_pixel_error);
+%     if mod(i,10)==1 && dcc_obj.show_real_world_images
+%         display_real_world_pixel_error(dcc_obj, opt_problem, measurement_set, measurement_avg_pixel_error);
+%     end
     
     %% Solve the linear system.
     if dcc_obj.optimize_theta_flag
-        % Need to arrange the theta values differently
-        num_thetas_to_optimize = sum(dcc_obj.optimize_theta_flag_vec);
-        Jac_diag_thetas = zeros(size(opt_problem.J,1), num_thetas_to_optimize*num_measurement_sets);
-        num_non_theta = size(opt_problem.J,2)-num_thetas_to_optimize;
-        Jac_params = opt_problem.J(:,1:num_non_theta);
-        Jac_thetas = opt_problem.J(:,num_non_theta+1:end);
-        for m=1:num_measurement_sets
-            measurement_struct = measurement_set{m};
-            empty_counter = 0;
-            for c=1:length(measurement_struct.T_S_M)
-                if isempty(measurement_struct.T_S_M{c})
-                    empty_counter = empty_counter + 1;
-                end
-            end
-            magic_num = length(dcc_obj.camera)-1-empty_counter+dcc_obj.add_identity_residual;
-            temp = Jac_thetas(6*magic_num*(m-1)+1:6*magic_num*(m-1)+6*magic_num,:);
-            Jac_diag_thetas(6*magic_num*(m-1)+1:6*magic_num*(m-1)+6*magic_num, num_thetas_to_optimize*(m-1)+1:num_thetas_to_optimize*(m-1)+num_thetas_to_optimize) = temp;
-        end
-        opt_problem.J = [Jac_params Jac_diag_thetas];
-        
-        % Plot the difference between the true and optimized values
-        if dcc_obj.have_true_encoder_values
-            figure(4);
-            clf;
-            optimized_theta_vals = zeros(num_measurement_sets, dcc_obj.num_DH_links);
-            optimized_theta_idx = find(dcc_obj.optimize_theta_flag_vec);
-            for m=1:num_measurement_sets
-                for t=1:length(dcc_obj.optimize_theta_flag_vec)
-                    if dcc_obj.optimize_theta_flag_vec(t)
-                        theta_name = strcat('dh_theta_',num2str(m),'_',num2str(t));
-                        key_idx = opt_problem.parameter_container.parameter_key_map(theta_name);
-                        theta_opt_val = opt_problem.parameter_container.parameter_list{key_idx}.parameter.value;
-                        optimized_theta_vals(m,t) = theta_opt_val;
-                        assert(strcmp(theta_name,opt_problem.parameter_container.parameter_list{key_idx}.key)==1);
-                    end
-                end
-            end
-            theta_idx_cols = find(dcc_obj.optimize_theta_flag_vec);
-            encoder_angle_diff = rad2deg(abs(dcc_obj.true_encoder_angles(1:num_measurement_sets,theta_idx_cols) - optimized_theta_vals(:,theta_idx_cols)));
-            for b=1:size(encoder_angle_diff,2)
-                subplot(size(encoder_angle_diff,2),1,b);
-                bar(encoder_angle_diff(:,b));
-                title(strcat('Angle difference between true and optimized values, angle:',num2str(optimized_theta_idx(b))));
-            end
-        end
-        
-    end
-   
-    J = opt_problem.J;
-    
-    if pause_flag
-        pause();
-        pause_flag = 0;
+        opt_problem.J = rearrangeThetaJacobians(dcc_obj, opt_problem.J, measurement_set);
     end
     
     assert(rank(opt_problem.J)==size(opt_problem.J,2), strcat('The jacobian is rank deficient. Column size: ', ...
@@ -117,11 +65,6 @@ for i=1:max_iterations
         success = 1;
         break;
     end
-    
-    % Show the simulation Object
-    %figure(5);
-    %clf;
-    [~] = display_simulation_object(dcc_obj, [0 0 0], opt_problem);
     
     % Clear system and perform next iteration
     opt_problem.clearLinearSystem();

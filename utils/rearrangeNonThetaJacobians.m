@@ -1,4 +1,4 @@
-function J_rearranged = rearrangeJacobians(dcc_obj, J_input)
+function J_rearranged = rearrangeNonThetaJacobians(dcc_obj, J_input)
 
 list_num_opt_params = [];
 num_dh_links = dcc_obj.num_DH_links;

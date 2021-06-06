@@ -5,12 +5,12 @@ fclose('all');
 
 % This is the main file to run to perform calibration
 
-format long
+format short
 
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
-reprojection_threshold = 2.0;           % Allowed reprojection threshold to decide if a measurement is good or not
+reprojection_threshold = 0.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
-pixel_noise.std_dev = 0.0;              % Pixel noise std dev
+pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 pixel_noise.mean = 0;                   % Pixel noise mean
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
 encoder_noise.std_dev = 10;             % How much noise to add to the encoder values (deg)

@@ -33,7 +33,7 @@ else
     cp = cos(angle);
     sp = sin(angle);
 
-    C = cp * eye(3) + (1 - cp) * axis * axis' + sp * hat(axis);
+    C = cp * eye(3) + (1 - cp) * (axis) * (axis') + sp * hat(axis);
     %display('vec2rot.m:  used analytical method');
 end
 

@@ -30,9 +30,9 @@ for meas_num_temp = 1:length(measurement_vec)
     
     temp = [single_measurement_set(:).L2error];
     single_set_mean_error = [temp(:).mean];
-    avg_pix_error_vec(meas_num_temp,:) = temp(:).mean;
-    min_pix_error_vec(meas_num_temp,:) = temp(:).min;
-    max_pix_error_vec(meas_num_temp,:) = temp(:).max;
+    avg_pix_error_vec(meas_num_temp,:) = [temp(:).mean];
+    min_pix_error_vec(meas_num_temp,:) = [temp(:).min];
+    max_pix_error_vec(meas_num_temp,:) = [temp(:).max];
     
     if(max(single_set_mean_error)>reprojection_threshold)
         bad_meas_counter = bad_meas_counter + 1;

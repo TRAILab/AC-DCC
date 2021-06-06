@@ -13,14 +13,14 @@ fileID = fopen(complete_path,'wt');
 % Write transform
 fprintf(fileID,'T_CW:\r\n');
 for i=1:4
-    fprintf(fileID,'%.15f %.15f %.15f %.15f\n', camera_T_target_struct.matrix(i,:));
+    fprintf(fileID,'%.10f %.10f %.10f %.10f\n', camera_T_target_struct.matrix(i,:));
 end
 
 fprintf(fileID,'\n');
 
 fprintf(fileID,'T_CW_cov:\r\n');
 for i=1:6
-    fprintf(fileID,'%.15f %.15f %.15f %.15f %.15f %.15f\n', camera_T_target_struct.cov(i,:));
+    fprintf(fileID,'%.10f %.10f %.10f %.10f %.10f %.10f\n', camera_T_target_struct.cov(i,:));
 end
 
 fprintf(fileID,'\n');
@@ -28,7 +28,7 @@ fprintf(fileID,'\n');
 % Write Gridpoints
 fprintf(fileID,'target_points_pix:\n');
 for i=1:size(target_pts_pix,1)
-    fprintf(fileID, '%.15f %.15f %.15f %.15f %.15f\n',target_pts_pix(i,:));
+    fprintf(fileID, '%.10f %.10f %.10f %.10f %.10f\n',target_pts_pix(i,:));
 end
 
 fprintf(fileID,'\n');
@@ -36,11 +36,11 @@ fprintf(fileID,'\n');
 % Write Angles
 fprintf(fileID,'gimbalangles:\n');
 if(length(raw_encoder_angles)==1)
-    fprintf(fileID,'%.15f\n',raw_encoder_angles(1,:));
+    fprintf(fileID,'%.10f\n',raw_encoder_angles(1,:));
 elseif(length(raw_encoder_angles)==2)
-    fprintf(fileID,'%.15f %.15f\n',raw_encoder_angles(1,:));
+    fprintf(fileID,'%.10f %.10f\n',raw_encoder_angles(1,:));
 elseif(length(raw_encoder_angles)==3)
-    fprintf(fileID,'%.15f %.15f %.15f\n',raw_encoder_angles(1,:));
+    fprintf(fileID,'%.10f %.10f %.10f\n',raw_encoder_angles(1,:));
 end
 
 fprintf(fileID,'\n');

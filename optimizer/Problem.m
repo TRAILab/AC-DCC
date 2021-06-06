@@ -86,7 +86,7 @@ classdef Problem<handle
             [residual_whitened, J_params, J_thetas] = DCCPoseLoopResidual(obj.parameter_container, measurement_struct, dcc_obj);
             
             % Rearrange Jacobian. Because it doesnt account for which static camera is being considered
-            J_rearranged = rearrangeJacobians(dcc_obj, J_params);
+            J_rearranged = rearrangeNonThetaJacobians(dcc_obj, J_params);
 
             obj.r = [obj.r; residual_whitened];
             obj.J = [obj.J; [J_rearranged J_thetas]];

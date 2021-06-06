@@ -7,12 +7,12 @@ close all
 % the number of points and D is the dimension. This makes it easier to
 % write functions to process the points
 
-format long
+format short
 
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
 reprojection_threshold = 1.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
-pixel_noise.std_dev = 0.0;              % Pixel noise std dev
+pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 pixel_noise.mean = 0;                   % Pixel noise mean
 pixel_noise.bounds = [-1.2 1.2];        % Noise bounds (not sure if we need it)
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)

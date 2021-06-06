@@ -23,7 +23,7 @@ rotValidate(C);
 
 [v,d]=eig(C);
 for i=1:3 
-   if abs(d(i,i)-1) < 1e-10 
+   if abs(d(i,i)-1) < 1e-7 
       a = v(:,i);
       a = a/sqrt(a'*a);
       phim = acos((trace(C)-1)/2);

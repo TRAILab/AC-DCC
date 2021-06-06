@@ -32,6 +32,7 @@ end
             a = sscanf(tline,'%f');
             T_CW(i,:) = a';
         end
+        T_CW = tranValidate(T_CW);
     end
 
     % Read the Transformation matrix
