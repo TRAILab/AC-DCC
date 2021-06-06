@@ -17,7 +17,6 @@ for i=1:max_iterations
     
     % Add all the residual terms.
     for j=1:num_measurement_sets
-        j
         measurement_struct = measurement_set{j};
         measurement_struct.num = j;
         measurement_struct.total_num = num_measurement_sets;
@@ -47,9 +46,9 @@ for i=1:max_iterations
     
     update_delta = opt_problem.solveLinearSystem();
     if i>100
-        opt_problem.updateParameters(0.02*update_delta, dcc_obj);
+        opt_problem.updateParameters(0.02*update_delta);
     else
-        opt_problem.updateParameters(0.1*update_delta, dcc_obj);
+        opt_problem.updateParameters(0.1*update_delta);
     end
     %opt_problem.updateParameters(0.2*update_delta, []);
     S=sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));

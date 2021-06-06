@@ -15,7 +15,7 @@ world_T_target:
 
 % Transform from Base of Mechanism to world
 world_T_base:
-1 0 0 0 
-0 -1 0 0
+0 -1 0 0 
+-1 0 0 0
 0 0 -1 0
 0 0 0 1

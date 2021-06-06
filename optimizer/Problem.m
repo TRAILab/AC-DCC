@@ -110,18 +110,14 @@ classdef Problem<handle
             %end
         end
         
-        function [] = updateParameters(obj, system_update_delta, simulation_object)
+        function [] = updateParameters(obj, system_update_delta)
             
-            if isempty(simulation_object)
-                num_parameters = length(obj.parameter_container.parameter_list);
-                for i=1:num_parameters
-                    param_block_size = obj.parameter_container.parameter_list{i}.tangentspace_dim;
-                    param_column_idx = obj.parameter_container.parameter_list{i}.column_idx;
-                    param_update_vector = system_update_delta(param_column_idx:param_column_idx+param_block_size-1);
-                    obj.parameter_container.parameter_list{i}.parameter.manifoldPlus(param_update_vector);
-                end
-            else
-                own_update_params(obj, system_update_delta, simulation_object)
+            num_parameters = length(obj.parameter_container.parameter_list);
+            for i=1:num_parameters
+                param_block_size = obj.parameter_container.parameter_list{i}.tangentspace_dim;
+                param_column_idx = obj.parameter_container.parameter_list{i}.column_idx;
+                param_update_vector = system_update_delta(param_column_idx:param_column_idx+param_block_size-1);
+                obj.parameter_container.parameter_list{i}.parameter.manifoldPlus(param_update_vector);
             end
             
         end
