@@ -24,15 +24,13 @@ show_real_world_images = 0;             % Show the pixel error on real world ima
 encoder_std_dev_deg = 10500;            % Uncertainty on the joint angle (This is just a high random value ?)
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_3_cam_new/';
+data_files.folder_path = 'data/test_3_cam/';
 data_files.measurement_type = 'train/';
 data_files.real_image_path = 'real_images/'; % This is combined with folder path
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.calibration_params_file_path = strcat(data_files.folder_path,'minimalparam_init.txt'); % Use the initialization file for calibration
-data_files.true_encoder_angles_path = strcat(data_files.folder_path,data_files.measurement_type, 'true_encoder_angles.txt');
-true_params_path = strcat(data_files.folder_path, 'trueParams.txt');
 data_files.use_random_pts = use_random_pts;
 
 %% Initialize simulation object

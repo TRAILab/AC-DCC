@@ -1,4 +1,4 @@
-function [ r_whiten,J_whiten ] = prewhiten_residual(residual,Jacobian, info_matrix)
+function [r_whiten, J_whiten] = whitenResidualAndJacobian(residual, Jacobian, info_matrix)
 % prewhitens the residual, so that we can account for the noise
 % characteristics in the optimization.
 
