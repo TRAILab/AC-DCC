@@ -21,13 +21,11 @@ classdef ParameterContainer<handle
         end
         
         function [idx] = getKeyIndex(obj,key)
-            
-            if isKey(obj.parameter_key_map,key)
+            if(isKey(obj.parameter_key_map,key))
                 idx = obj.parameter_key_map(key);
             else
                 error('parameter_container::key not found!');
             end
-            
         end
         
         function [value] = getKeyValue(obj,key)
@@ -42,6 +40,7 @@ classdef ParameterContainer<handle
                 error('parameter_container::key not found!');
             end
         end
+        
     end
     
 end

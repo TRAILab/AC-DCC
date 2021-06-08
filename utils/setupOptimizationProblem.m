@@ -84,22 +84,22 @@ for m=1+num_dh_links+1:length(dcc_obj.link_struct)
     if strcmp(dcc_obj.link_struct(m).type,'4dof')
         if(idx_map(1)>0) % alpha parameter
             key = strcat('4dof_rx_', num2str(static_count));
-            rx_opt_param = OptimizationParameter(FourDOFParamRx(default_values(1)), 1, key);
+            rx_opt_param = OptimizationParameter(Rx4DofParam(default_values(1)), 1, key);
             parameter_container.addParameter(rx_opt_param);
         end
         if(idx_map(2)>0) % alpha parameter
             key = strcat('4dof_ry_', num2str(static_count));
-            ry_opt_param = OptimizationParameter(FourDOFParamRy(default_values(2)), 1, key);
+            ry_opt_param = OptimizationParameter(Ry4DofParam(default_values(2)), 1, key);
             parameter_container.addParameter(ry_opt_param);
         end
         if(idx_map(3)>0) % alpha parameter
             key = strcat('4dof_tx_', num2str(static_count));
-            tx_opt_param = OptimizationParameter(FourDOFParamTx(default_values(3)), 1, key);
+            tx_opt_param = OptimizationParameter(Tx4DofParam(default_values(3)), 1, key);
             parameter_container.addParameter(tx_opt_param);
         end
         if(idx_map(4)>0) % alpha parameter
             key = strcat('4dof_ty_', num2str(static_count));
-            ty_opt_param = OptimizationParameter(FourDOFParamTy(default_values(4)), 1, key);
+            ty_opt_param = OptimizationParameter(Ty4DofParam(default_values(4)), 1, key);
             parameter_container.addParameter(ty_opt_param);
         end
     end

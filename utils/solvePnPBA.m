@@ -35,7 +35,7 @@ for i=1:max_iterations
     
     % solve the linear system.
     update_delta = opt_problem.solveLinearSystem();
-    opt_problem.updateParameters(0.25*update_delta, []);
+    opt_problem.updateParameters(0.25*update_delta);
     S = sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
     %disp(S);
     

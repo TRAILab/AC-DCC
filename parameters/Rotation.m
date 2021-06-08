@@ -10,11 +10,23 @@ classdef Rotation<handle
     methods
         
         function [obj] = Rotation(rot_params)
-            if size(rot_params,1) == 3 && size(rot_params,2) == 3
-                obj.matrix = rot_params;
-            elseif size(rot_params,1) == 1 && size(rot_params,2) == 3
-                obj.matrix = vec2rot(rot_params');
-            end
+            obj.fromEulerXyz(rot_params)
+        end
+        
+        function [] = fromEulerXyz(obj, rot_params)
+%             % extract motion parameters
+%             rx = pose(1); ry = pose(2); rz = pose(3);
+%             
+%             %precompute sine/cosine
+%             sx = sin(rx); cx = cos(rx); sy = sin(ry);
+%             cy = cos(ry); sz = sin(rz); cz = cos(rz);
+%             
+%             r00 = cz*cy;  r01 = cz*sy*sx - sz*cx;  r02 = cz*sy*cx + sz*sx;
+%             r10 = sz*cy;  r11 = sz*sy*sx + cz*cx;  r12 = sz*sy*cx - cz*sx;
+%             r20 = -sy;    r21 = cy*sx;             r22 = cy*cx;
+%             
+%             obj.matrix = [r00 r01 r02 ; r10 r11 r12 ; r20 r21 r22];
+              obj.matrix = vec2rot(rot_params');
         end
         
         function r = rotate(obj, input_vector)
@@ -51,8 +63,7 @@ classdef Rotation<handle
         
         function [difference] = manifoldMinus(obj,input_rotation)
             % compute the boxminus
-            %difference = vectorFromSkewSymmetricMatrix3(logm(obj.matrix*input_rotation.matrix'));
-            difference = rot2vec(obj.matrix*input_rotation.matrix');
+            difference = vectorFromSkewSymmetricMatrix3(logm(obj.matrix*input_rotation.matrix'));
         end
         
         function [difference] = manifoldMinusQuaternion(obj,input_rotation)
@@ -88,8 +99,7 @@ classdef Rotation<handle
         
         function [] = manifoldPlus(obj,perturbation)
             % rotation perturbation is in so3
-            %Rp = expm(skewSymmetricMatrix3(perturbation(1:3)));
-            Rp = vec2rot(reshape(perturbation,3,1));
+            Rp = expm(skewSymmetricMatrix3(perturbation(1:3)));
             obj.matrix = Rp*obj.matrix;
         end
         

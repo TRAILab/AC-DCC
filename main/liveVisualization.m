@@ -2,9 +2,8 @@ clear all
 clc
 close all
 
-% This file allows to visualize the simulation object and projections onto
-% the image plane for each camera. It allows for modifying joint angle
-% values with sliders.
+% This file is used to visualize the simulation by observing the change in
+% the mechanism using angles provided by the sliders.
 
 global input_angles dsc_obj comb_fig orig_T_WB;
 
@@ -29,9 +28,10 @@ move_base = 0;                          % Decide if you want to move the drone
 evaluation_flag = 0;                    % Are we performing the evaluation of the calibration
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_3_cam/';
+data_files.folder_path = 'data/test_3_cam_new/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
+data_files.camera_param_file_path = strcat(data_files.folder_path,'cameraParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
 data_files.calibration_params_file_path = strcat(data_files.folder_path,'minimalparam_true.txt');
@@ -54,17 +54,21 @@ dsc_obj.optimize_theta_flag_vec = optimize_theta_flag_vec;
 dsc_obj.move_base = move_base;
 dsc_obj.use_random_points = use_random_pts;
 
-% Input angles all at 0 degrees
 joint_angle_count = 0;
 for i=1:length(dsc_obj.link_struct)
     if strcmp(dsc_obj.link_struct(i).type,'mdh') || strcmp(dsc_obj.link_struct(i).type,'dh')
         joint_angle_count = joint_angle_count + 1;
-        input_angles(joint_angle_count) = mean(dsc_obj.link_struct(i).bounds);
+    input_angles(joint_angle_count) = mean(dsc_obj.link_struct(i).bounds);
     end
 end
 
 % Initial display
-showObjAndPix(dsc_obj, input_angles);
+comb_fig = figure('Name','comb_fig');
+figure(comb_fig);
+show_obj_and_pix(dsc_obj, input_angles);
+%arm_fig = figure('Name','arm_fig');
+%figure(arm_fig);
+%display_only_arm(simulation_object, dh_rad)
 
 % Setup UI
-setupUI(dsc_obj);
+setup_ui(dsc_obj);

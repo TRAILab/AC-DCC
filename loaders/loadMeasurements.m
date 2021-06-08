@@ -15,7 +15,6 @@ dcc_obj.encoder_collection = [];
 
 % Load measurements
 for meas_num_temp = 1:length(measurement_vec)
-    meas_num_temp
     
     % Get the measurement number
     meas_num = measurement_vec(meas_num_temp);

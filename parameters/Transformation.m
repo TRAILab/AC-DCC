@@ -3,15 +3,16 @@ classdef Transformation<handle
     %   Detailed explanation goes here
     
     properties
+        % Internal storage
         matrix;
     end
     
     methods
         
         function [obj] = Transformation(pose_params)
-            % If pose_params is a vector
+             % If pose_params is a vector
             if length(pose_params)==6
-                obj.matrix = vec2tran(pose_params');
+                obj.matrix = vec2tran2(pose_params');
             % If pose_params is a matrix
             elseif length(pose_params)==4
                 obj.matrix = pose_params;
@@ -21,6 +22,7 @@ classdef Transformation<handle
         end
         
         function r = transform(obj, input_vector)
+            % Create homogenous vector
             input_vector = reshape(input_vector,[3,1]);
             input_vector = [input_vector ;1];
             r = obj.matrix*input_vector;
@@ -32,20 +34,23 @@ classdef Transformation<handle
             input_vector = reshape(input_vector,[3,1]);
             transformed = obj.transform(input_vector);
             transformed = reshape(transformed, [1,3]);
-            
             % Jacobian calculation
             r = obj.matrix(1:3,1:3)*(input_vector);
+            % Jacobian wrt transformation params is transformed point
+            % in skew symmetric form
+            % Original
             J_R = -skewSymmetricMatrix3(r);
+            % Jacobian wrt translation is just I
             J_t = eye(3);
             J_T = [J_R J_t];
-            
             % Jacobian wrt point is just the rotation matrix
             J_p = obj.matrix(1:3,1:3);
         end
         
-        function [composed, J_obj, J_in] = composeAndJacobian(obj,input_transform)
+        function [composed,J_obj, J_in] = composeAndJacobian(obj,input_transform)
            
-            composed = Transformation(obj.matrix*input_transform.matrix);
+            composed = Transformation([0 0 0 0 0 0]);
+            composed.matrix = obj.matrix*input_transform.matrix;
             % Jacobian wrt the object
             J_obj = zeros(6,6);
             J_obj(1:3,1:3) = eye(3);
@@ -79,9 +84,25 @@ classdef Transformation<handle
         
         function [difference] = manifoldMinus(obj, input_transformation)
             % compute the boxminus for the rotations
-            R_obj = Rotation(obj.matrix(1:3,1:3));
-            R_in =  Rotation(input_transformation.matrix(1:3,1:3));
+            R_obj = Rotation([0 0 0]);
+            R_obj.matrix = obj.matrix(1:3,1:3);
+            R_in =  Rotation([0 0 0]);
+            R_in.matrix = input_transformation.matrix(1:3,1:3);
             diff_rot = R_obj.manifoldMinus(R_in);
+            
+            %transformation difference is just vector diff
+            diff_trans = obj.matrix(1:3,4) - input_transformation.matrix(1:3,4);            
+            difference = [diff_rot ; diff_trans];
+           
+        end
+        
+         function [difference] = manifoldMinusQuaternion(obj, input_transformation)
+            % compute the boxminus for the rotations
+            R_obj = Rotation([0 0 0 0 0 0]);
+            R_obj.matrix = obj.matrix(1:3,1:3);
+            R_in =  Rotation([0 0 0 0 0 0]);
+            R_in.matrix = input_transformation.matrix(1:3,1:3);
+            diff_rot = R_obj.manifoldMinusQuaternion(R_in);
             
             %transformation difference is just vector diff
             diff_trans = obj.matrix(1:3,4) - input_transformation.matrix(1:3,4);            
@@ -92,8 +113,10 @@ classdef Transformation<handle
         function [difference, J_left, J_right] = manifoldMinusAndJacobian(obj, T_right)
             difference = obj.manifoldMinus(T_right);
             %compute Jacobians
-            R1 = Rotation(obj.matrix(1:3,1:3));
-            R2 = Rotation(T_right.matrix(1:3,1:3));
+            R1 = Rotation([0 0 0]);
+            R2 = Rotation([0 0 0]);
+            R1.matrix = obj.matrix(1:3,1:3);
+            R2.matrix = T_right.matrix(1:3,1:3);
             [~, J_R_left, J_R_right] = R1.manifoldMinusAndJacobian(R2);
             % Left Jacobian
             J_left = zeros(6,6);
@@ -119,6 +142,11 @@ classdef Transformation<handle
             obj.matrix(1:3,4) = obj.matrix(1:3,4) + tp;
         end
         
+        function [p] = getParams(obj)
+            p = trans2param(obj.matrix);
+        end
+        
     end
+    
 end
 

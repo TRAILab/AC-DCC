@@ -1,7 +1,9 @@
 function link_struct = loadLinkParams(file_path)
 
+% sets an initial guess and the mappings
+
 % gets the initial guess vector
-params_struct = readDSCParams(file_path);
+params_struct = loadDSCParams(file_path);
 
 num_DH_links = 0;
 for i=1:length(params_struct)
@@ -99,4 +101,5 @@ for m=num_DH_links+1+1:length(params_struct)
 end
 
 end
+
 

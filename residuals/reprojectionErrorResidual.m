@@ -19,4 +19,3 @@ else
     J_Total=[];
 end
 end
-
