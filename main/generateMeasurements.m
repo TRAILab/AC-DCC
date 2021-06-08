@@ -36,7 +36,6 @@ evaluation_flag = 0;                    % Are we performing the evaluation of th
 % Data location #################################### <--- Important to go through each of these and modify the values
 data_files.folder_path = 'data/test_3_cam_new/';
 data_files.measurement_type = 'train/';
-data_files.camera_param_file_path = strcat(data_files.folder_path,'cameraParams.txt');
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
@@ -45,6 +44,7 @@ data_files.use_random_pts = use_random_pts;
 
 %% Initialize simulation object
 sim_obj = initDCC(data_files);
+sim_obj = loadTransformsAndTarget(data_files, sim_obj);
 sim_obj.reprojection_threshold = reprojection_threshold;
 sim_obj.axis_len = axis_len;
 sim_obj.pixel_noise = pixel_noise;

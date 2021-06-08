@@ -47,10 +47,7 @@ opt_problem.addDCCCovariancePoseloopResidual();
 % Get the relative pose covariance
 system_covariance = opt_problem.getSystemCovariance();
 
-if simulation_object.pixel_error_formulation
-    cov_mat = system_covariance(1:6, 1:6);
-else
-    cov_mat = system_covariance(13:end, 13:end); % <-- covariance wrt T_S_M
-end
+cov_mat = system_covariance(1:6, 1:6);
+cov_mat = system_covariance(13:end, 13:end); % <-- covariance wrt T_S_M
 
 end

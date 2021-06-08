@@ -1,10 +1,10 @@
-function setup_ui(simulation_object)
+function setupUI(simulation_object)
 
 % UI to display sliders
 
 global sliders
 
-sliders = figure(5);
+sliders = figure('Name','UI');
 disp('Please note the angles J0, J1, J2 .. start from the last joint (the one closest to the end effector) and proceed to the base joint');
 combined_DH_links = simulation_object.num_DH_links + simulation_object.use_modified_DH_flag;
 myhandles = guihandles(sliders);
@@ -44,3 +44,16 @@ for i=1:length(a)
                     'String',num2str(bounds(2)));
     end
 end
+
+bounds = [-180 180];
+i=i+1;
+a = [a a(end)+1];
+ui_control_vec(i) = uicontrol('Parent',sliders,'String','Base World Rotation','Style','slider','Position',...
+                              [80,strt1-70*(a(i)-1),419,23],'value',(-bounds(1)+bounds(2))/2,...
+                              'min',0, 'max',-bounds(1)+bounds(2),'Callback',@BWR_callback);
+b = uicontrol('Parent',sliders,'Style','text','Position',[250,strt2-70*(a(i)-1),150,23],...
+            'String','Base World Rotation');
+c = uicontrol('Parent',sliders,'Style','text','Position',[20,strt2-70*(a(i)-1),50,50],...
+            'String',num2str(bounds(1)));
+d = uicontrol('Parent',sliders,'Style','text','Position',[500,strt2-70*(a(i)-1),50,50],...
+            'String',num2str(bounds(2)));

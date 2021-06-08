@@ -13,7 +13,6 @@ axis_len = 0.4;                         % Length of the axis (for display purpos
 pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 pixel_noise.mean = 0;                   % Pixel noise mean
 pixel_noise.bounds = [-1.2 1.2];        % Noise bounds (not sure if we need it)
-optimize_theta_flag_vec = [0 0 0];      % Which angles will be added with noise (0: no noise added, 1: noise added)
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
 encoder_noise.std_dev = 10;             % How much noise to add to the encoder values (deg)
 encoder_noise.bounds = [-7 7];          % Noise to add on the encoders (not sure if we need it)
@@ -28,7 +27,7 @@ move_base = 0;                          % Decide if you want to move the drone
 evaluation_flag = 0;                    % Are we performing the evaluation of the calibration
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_3_cam_new/';
+data_files.folder_path = 'data/test_3_cam/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.camera_param_file_path = strcat(data_files.folder_path,'cameraParams.txt');
@@ -46,11 +45,9 @@ dsc_obj.encoder_noise.mean = deg2rad(encoder_noise.mean);
 dsc_obj.encoder_noise.bounds = deg2rad(encoder_noise.bounds);
 dsc_obj.reprojection_threshold = reprojection_threshold;
 dsc_obj.data_files = data_files;
-dsc_obj.evaluation_flag = evaluation_flag;
 dsc_obj.num_collected_measurements = 0;
 dsc_obj.optimize_scale_offset = 0;
-dsc_obj.optimize_theta_flag = sum(optimize_theta_flag_vec)>0;
-dsc_obj.optimize_theta_flag_vec = optimize_theta_flag_vec;
+dsc_obj.optimize_theta_flag = sum(dsc_obj.optimize_theta_flag_vec)>0;
 dsc_obj.move_base = move_base;
 dsc_obj.use_random_points = use_random_pts;
 
@@ -62,13 +59,7 @@ for i=1:length(dsc_obj.link_struct)
     end
 end
 
-% Initial display
-comb_fig = figure('Name','comb_fig');
-figure(comb_fig);
-show_obj_and_pix(dsc_obj, input_angles);
-%arm_fig = figure('Name','arm_fig');
-%figure(arm_fig);
-%display_only_arm(simulation_object, dh_rad)
+showObjAndPix(dsc_obj, input_angles);
 
 % Setup UI
-setup_ui(dsc_obj);
+setupUI(dsc_obj);
