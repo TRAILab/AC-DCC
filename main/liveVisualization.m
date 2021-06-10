@@ -17,7 +17,7 @@ encoder_noise.std_dev = 10;             % How much noise to add to the encoder v
 use_random_pts = 0;                     % Use random points in the environment (1) or a target (0)
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_3_cam/';
+data_files.folder_path = 'data/test_3_cam_new/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
