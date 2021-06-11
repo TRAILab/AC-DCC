@@ -72,11 +72,11 @@ for i=1:size(encoder_angles_rad,1)
             disp(strcat('Solving PnP for Cam: ', sim_obj.cameras{c}.sensor_name));
             cam_T_target_orig = w_T_cam\world_T_target;
             noisy_cam_T_target = addNoise(cam_T_target_orig, 'transformation', sim_obj.transformation_noise, []);
-            [cam_T_target, cam_success, L2_error] = solvePnPBA(target_pts_seen_in_cam, noisy_cam_pix_on_plane, sim_obj.cameras{c}, sim_obj.reprojection_threshold, noisy_cam_T_target);
+            [cam_T_target, L2_error] = solvePnPBA(target_pts_seen_in_cam, noisy_cam_pix_on_plane, sim_obj.cameras{c}, noisy_cam_T_target);
         end
         
         cam_T_target_list(c) = {cam_T_target};
-        cam_success_list(c) = cam_success;
+        cam_success_list(c) = L2error.mean < sim_obj.reprojection_threshold;
         L2_error_cam_list{c} = L2_error;
         target_pts_seen_in_cam_list(c) = {target_pts_seen_in_cam};
         noisy_cam_pix_on_plane_list(c) = {noisy_cam_pix_on_plane};

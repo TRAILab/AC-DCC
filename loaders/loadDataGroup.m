@@ -14,6 +14,14 @@ for i=1:num_cameras
     assert(isfile(file_string)==1, 'The file does not exist');
 
     [T_CW, T_CW_cov, target_points, pixels, gimbal_angles] = loadSingleMeasurement(file_string);
+    
+    % Calculate the PnP sanity check
+    if ~isempty(target_points) && ~isempty(pixels)
+        [T_CW_data, ~] = solvePnPBA(target_points, pixels, camera_group{i}, T_CW);
+        T_CW = T_CW_data.matrix;
+        T_CW_cov = T_CW_data.cov;
+    end
+    
     single_measurement_set(i).T_CW = T_CW;
     single_measurement_set(i).T_CW_cov = T_CW_cov;
     single_measurement_set(i).name = camera_name;

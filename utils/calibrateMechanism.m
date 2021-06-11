@@ -60,4 +60,4 @@ for i=1:max_iterations
     opt_problem.clearLinearSystem();
 end
 
-a = update_delta_full;
+a = 1;

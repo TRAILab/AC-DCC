@@ -39,6 +39,9 @@ end
     function readTCWCov()
         for i=1:6
             tline = fgetl(fid);
+            if isempty(tline)
+                break;
+            end
             a = sscanf(tline,'%f');
             T_CW_cov(i,:) = a';
         end

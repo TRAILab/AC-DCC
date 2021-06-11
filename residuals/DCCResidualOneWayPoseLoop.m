@@ -20,18 +20,27 @@ T_SM_est = Transformation(T_SM_est_mat);
 
 static_cam_num = str2double(dcc_obj.static_cam_key(4));
 
+% Get data for calculating the jacobians
 T_SW_meas_mat = measurement_set.T_CW{static_cam_num + 1};
 T_SW_meas = Transformation(T_SW_meas_mat);
 T_MW_meas = Transformation(measurement_set.T_CW{1});
 
-[T_SW_est, J_SM_est, ~] = T_SM_est.composeAndJacobian(T_MW_meas);
-[residual, ~, J_mm_right] = T_SW_meas.manifoldMinusAndJacobian(T_SW_est);
-
+% Calculate jacobians
+[T_SW_est, J_SM_est, J_SW_MW] = T_SM_est.composeAndJacobian(T_MW_meas);
+[residual, J_mm_left, J_mm_right] = T_SW_meas.manifoldMinusAndJacobian(T_SW_est);
 J_total = J_mm_right*J_SM_est*[J_chain J_theta];
 
+static_cov = J_mm_left*measurement_set.T_CW_cov{static_cam_num + 1}*(J_mm_left');
+gimbal_cov = (J_mm_right*J_SW_MW)*measurement_set.T_CW_cov{1}*(J_SW_MW'*J_mm_right');
+total_cov = static_cov + gimbal_cov;
+total_info = inv(total_cov);
+L = chol(total_info, 'lower');
+J_total = L'*J_total;
+residual = L'*residual;
+
+% Caluclate pixel error and pose error
 static_pts = applyTransform(T_SW_est.matrix, measurement_set.target_points{static_cam_num+1});
 projected_pix = dcc_obj.cameras{static_cam_num + 1}.project(static_pts);
 calib_error.pixel_error = getL2Error(projected_pix, measurement_set.pixels{static_cam_num+1});
-
 abs_residual = abs(residual);
 calib_error.tr_error = [rad2deg(mean(abs_residual(1:3))) mean(abs_residual(4:6))];
