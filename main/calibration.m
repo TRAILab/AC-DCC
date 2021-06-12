@@ -56,7 +56,7 @@ opt_problem = setupOptimizationProblem(dcc_obj, measurement_set);
 % Setup optimizer params
 opt_params.gradient_norm_threshold = 1e-12;
 opt_params.step_norm_threshold = 1e-12;
-opt_params.max_iterations = 500;
+opt_params.max_iterations = 1;
 opt_params.success = 0;
 
 dcc_obj.caz = 0;
@@ -69,3 +69,5 @@ dcc_obj.cel = cel;
 
  % Optimize for Calibration Parameters
 [dcc_obj, opt_problem] = calibrateMechanism(dcc_obj, opt_problem, opt_params, measurement_set);
+
+writeCalibratedValues(dcc_obj, opt_problem);

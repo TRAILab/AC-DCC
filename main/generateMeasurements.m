@@ -12,7 +12,7 @@ format long
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
 reprojection_threshold = 1.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
-pixel_noise.std_dev = 0.2;              % Pixel noise std dev
+pixel_noise.std_dev = 0.0;              % Pixel noise std dev
 pixel_noise.mean = 0;                   % Pixel noise mean
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
 encoder_noise.std_dev = 10;             % How much noise to add to the encoder values (deg)
@@ -30,7 +30,7 @@ num_linear_angles_per_joint = [4;4;5];  % Number of angles per joint to collect 
 move_base = 0;                          % Decide if you want to move the drone
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_3_cam_new/';
+data_files.folder_path = 'data/test_3_cam/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');

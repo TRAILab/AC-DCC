@@ -76,7 +76,7 @@ for i=1:size(encoder_angles_rad,1)
         end
         
         cam_T_target_list(c) = {cam_T_target};
-        cam_success_list(c) = L2error.mean < sim_obj.reprojection_threshold;
+        cam_success_list(c) = L2_error.mean < sim_obj.reprojection_threshold;
         L2_error_cam_list{c} = L2_error;
         target_pts_seen_in_cam_list(c) = {target_pts_seen_in_cam};
         noisy_cam_pix_on_plane_list(c) = {noisy_cam_pix_on_plane};
