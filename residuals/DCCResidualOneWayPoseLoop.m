@@ -30,6 +30,7 @@ T_MW_meas = Transformation(measurement_set.T_CW{1});
 [residual, J_mm_left, J_mm_right] = T_SW_meas.manifoldMinusAndJacobian(T_SW_est);
 J_total = J_mm_right*J_SM_est*[J_chain J_theta];
 
+% Calculate covariance and whiten jacobian and residual
 static_cov = J_mm_left*measurement_set.T_CW_cov{static_cam_num + 1}*(J_mm_left');
 gimbal_cov = (J_mm_right*J_SW_MW)*measurement_set.T_CW_cov{1}*(J_SW_MW'*J_mm_right');
 total_cov = static_cov + gimbal_cov;

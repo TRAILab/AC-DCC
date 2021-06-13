@@ -55,79 +55,18 @@ classdef Problem<handle
             
         end
         
-        function [calib_error, det_info_mat] = addDCCResidualPoseLoop(obj, measurement_struct, simulation_object)
+        function [calib_error] = addDCCResidualPoseLoop(obj, measurement_struct, simulation_object)
             [residual_vector, J_total, calib_error] = DCCResidualOneWayPoseLoop(obj.parameter_container, measurement_struct, simulation_object);
             
             % Rearrange Jacobian. Because it doesnt account for which
             % static camera is being considered
             J_total = rearrangeNonThetaJacobian(simulation_object, J_total);
             
-            % compute the relative pose covariance
-            cov_mat = computeRelativePoseCovariance(simulation_object, measurement_struct);
-            info_mat = inv(cov_mat);
-            det_info_mat = det(info_mat);
-            
-            % Perform whitening
-            %[r_whiten, J_whiten] = prewhiten_residual(residual_vector, J_total, info_mat);
-            %assert(rank(J_whiten) == size(J_whiten,2))
-            
             % append the residual vector
-            %obj.r = [obj.r; r_whiten];
             obj.r = [obj.r; residual_vector];
             
             % append the jacobian matrix
-            %obj.J = [obj.J; J_whiten];
             obj.J = [obj.J; J_total];
-        end
-        
-        function [] = addDCCCovariancePoseloopResidual(obj)
-            
-            % residual of the form: I - inv(T_S_WS.matrix)*T_S_M.matrix*T_M_WM.matrix
-            T_I = Transformation([0 0 0 0 0 0]);
-            p_M_WM = obj.parameter_container.parameter_list{1};
-            p_S_WS = obj.parameter_container.parameter_list{2};
-            p_S_M = obj.parameter_container.parameter_list{3};
-            
-            T_S_WS = p_S_WS.parameter;
-            T_M_WM = p_M_WM.parameter;
-            T_S_M = p_S_M.parameter;
-            
-            % Jacobian calculations
-            [T_S_MW, J_left, J_right] = T_S_M.composeAndJacobian(T_M_WM);
-            [T_WS_S, J_inv] = T_S_WS.inverseAndJacobian();
-            [T_WS_MW, J_left2, J_right2] = T_WS_S.composeAndJacobian(T_S_MW);
-            
-            [residual, ~, Jmm] = T_I.manifoldMinusAndJacobian(T_WS_MW);
-            meas_size = length(residual);
-            
-            % Jacobian wrt param1
-            J1 = Jmm*J_left2*J_inv;
-            
-            % Jacobian wrt param2
-            J2 = Jmm*J_right2*J_right;
-            
-            % Jacobian wrt param3
-            J3 = Jmm*J_right2*J_left;
-            
-            % append the residual vector
-            obj.r = [obj.r; residual];
-            row_index = size(obj.J,1)+1;
-            
-            % Append the Jacobians
-            % J1
-            column_index = p_S_WS.column_idx;
-            column_size = p_S_WS.tangentspace_dim;
-            obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J1;
-            
-            % J2
-            column_index = p_M_WM.column_idx;
-            column_size = p_M_WM.tangentspace_dim;
-            obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J2;
-            
-            % J3
-            column_index = p_S_M.column_idx;
-            column_size = p_S_M.tangentspace_dim;
-            obj.J(row_index:row_index+meas_size-1,column_index:column_index+column_size-1) = J3; 
         end
          
         function update_delta = solveLinearSystem(obj)
