@@ -22,7 +22,7 @@ have_true_encoder_values = 1;
 
 % Data location #################################### <--- Important to go through each of these and modify the values
 data_files.folder_path = 'data/test_3_cam/';
-data_files.measurement_type = 'train/';
+data_files.measurement_type = 'test/';
 data_files.real_image_path = 'real_images/'; % This is combined with folder path
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');

@@ -31,7 +31,7 @@ move_base = 0;                          % Decide if you want to move the drone
 
 % Data location #################################### <--- Important to go through each of these and modify the values
 data_files.folder_path = 'data/test_3_cam/';
-data_files.measurement_type = 'train/';
+data_files.measurement_type = 'test/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
