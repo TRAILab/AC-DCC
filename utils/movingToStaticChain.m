@@ -72,29 +72,35 @@ for k=1:num_dh_links
 end
 
 static_cam_key = dcc_obj.static_cam_key;
+static_cam_num_str = static_cam_key(end-1);
+link_opt = dcc_obj.link_struct(1 + dcc_obj.num_DH_links + str2double(static_cam_num_str));
+dv = link_opt.default_values;
 
-if isKey(parameter_container.parameter_key_map, static_cam_key)
-    T_SB = parameter_container.getKeyValue(static_cam_key); 
-    transform_chain{end+1} = T_SB;
-else
-    static_cam_num = static_cam_key(end-1);
-    link_opt = dcc_obj.link_struct(1 + dcc_obj.num_DH_links + str2double(static_cam_num));
-    dv = link_opt.default_values;
+if strcmp(static_cam_num_str,'1')
     [rx_val, ry_val, tx_val, ty_val] = deal(dv(1), dv(2), dv(3), dv(4));
     if(link_opt.index_map(1)>0)
-        rx_val = parameter_container.getKeyValue(strcat('4dof_rx_', static_cam_num));
+        rx_val = parameter_container.getKeyValue(strcat('4dof_rx_', static_cam_num_str));
     end
     if(link_opt.index_map(2)>0)
-        ry_val = parameter_container.getKeyValue(strcat('4dof_ry_', static_cam_num));
+        ry_val = parameter_container.getKeyValue(strcat('4dof_ry_', static_cam_num_str));
     end
     if(link_opt.index_map(3)>0)
-        tx_val = parameter_container.getKeyValue(strcat('4dof_tx_', static_cam_num));
+        tx_val = parameter_container.getKeyValue(strcat('4dof_tx_', static_cam_num_str));
     end
     if(link_opt.index_map(4)>0)
-        ty_val = parameter_container.getKeyValue(strcat('4dof_ty_', static_cam_num));
+        ty_val = parameter_container.getKeyValue(strcat('4dof_ty_', static_cam_num_str));
     end
     T_SB = generate4dofMatrix(rx_val,ry_val,tx_val,ty_val);
     transform_chain{end+1} = T_SB;
+else
+    if isKey(parameter_container.parameter_key_map, static_cam_key)
+        T_SB = parameter_container.getKeyValue(static_cam_key); 
+        transform_chain{end+1} = T_SB;
+    else
+        T_SB = Transformation(dv).matrix; 
+        transform_chain{end+1} = T_SB;
+    end
+    
 end
 
 % Add the 6 DOF transforms. Transformation from static camera to moving camera

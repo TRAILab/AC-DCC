@@ -27,7 +27,7 @@ data_files.real_image_path = 'real_images/'; % This is combined with folder path
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
-data_files.calibration_params_file_path = strcat(data_files.folder_path, 'minimalparam_init.txt'); % Use the initialization file for calibration
+data_files.calibration_params_file_path = strcat(data_files.folder_path, 'calibratedParams.txt'); % Use the initialization file for calibration
 data_files.true_params_file_path = strcat(data_files.folder_path, 'minimalparam_true.txt');
 data_files.use_random_pts = use_random_pts;
 

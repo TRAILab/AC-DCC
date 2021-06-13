@@ -85,19 +85,12 @@ for i=1:chain_length
         end
         
     elseif (i==chain_length)
-        if isKey(parameter_container.parameter_key_map, dcc_obj.static_cam_key)
-            T_SB = Transformation(parameter_container.getKeyValue(dcc_obj.static_cam_key));
-            T_BM = Transformation(chain.pre);
-             % composition Jacobian
-            [~, J_left, ~] = T_SB.composeAndJacobian(T_BM);
-            % This is used to get which columns based on the index map
-            static_idx = str2double(dcc_obj.static_cam_key(4));
-            temp = dcc_obj.link_struct(1+num_dh_links+static_idx).index_map;
-            J_current = J_left(:,find(temp(:)~=-1));
-        else
+        static_cam_key = dcc_obj.static_cam_key;
+        static_cam_num_str = static_cam_key(end-1);
+        if strcmp(static_cam_num_str,'1')
             phi_4dof = transform_chain{i};
             phi_pre = chain.pre;
-            
+
             % Compute the transform and jacobian of the composition from moving
             % camera to current DH block.  Phi_2  = Phi_left*Phi_right =
             % phi_dh*phi_pre;
@@ -106,8 +99,8 @@ for i=1:chain_length
             % now compose and jacobian of Phi_chain = Phi_1*Phi_2
             Phi_1 = Transformation(phi_pre);
             [~, J_Phi_4dof, ~] = PHI_4DOF.composeAndJacobian(Phi_1);
-            
-            static_idx = str2double(dcc_obj.static_cam_key(4));
+
+            static_idx = str2double(static_cam_key(4));
             link_opt = dcc_obj.link_struct(1+num_dh_links+static_idx); % plus one because first link is 6dof transform
             dv = link_opt.default_values;
             [rx_val, ry_val, tx_val, ty_val] = deal(dv(1), dv(2), dv(3), dv(4));
@@ -135,6 +128,19 @@ for i=1:chain_length
 
             % now calculate J_current using chain rule
             J_current = J_Phi_4dof * J_param;
+        else
+            if isKey(parameter_container.parameter_key_map, static_cam_key)
+                T_SB = Transformation(parameter_container.getKeyValue(static_cam_key));
+                T_BM = Transformation(chain.pre);
+                 % composition Jacobian
+                [~, J_left, ~] = T_SB.composeAndJacobian(T_BM);
+                % This is used to get which columns based on the index map
+                static_idx = str2double(dcc_obj.static_cam_key(4));
+                temp = dcc_obj.link_struct(1+num_dh_links+static_idx).index_map;
+                J_current = J_left(:,find(temp(:)~=-1));
+            else
+                J_current = [];
+            end
         end
         
     else

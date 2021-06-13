@@ -12,14 +12,14 @@ format long
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
 reprojection_threshold = 1.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
-pixel_noise.std_dev = 0.0;              % Pixel noise std dev
+pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 pixel_noise.mean = 0;                   % Pixel noise mean
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
-encoder_noise.std_dev = 10;             % How much noise to add to the encoder values (deg)
+encoder_noise.std_dev = 7;             % How much noise to add to the encoder values (deg)
 transformation_noise.trans.mean = 0;    % Transformation noise, translation
-transformation_noise.trans.std_dev = 0.0;  
+transformation_noise.trans.std_dev = 0.03;  
 transformation_noise.rot.mean = 0;      % Transformation noise, rotation
-transformation_noise.rot.std_dev = 0; 
+transformation_noise.rot.std_dev = 7; 
 use_random_pts = 1;                     % Use random points in the environment (1) or a target (0)
 angle_type = 'random';                  % Type of angles we want, (linear, random)
 num_random_angles = 30;                  % Number of random angles if random angle type

@@ -10,35 +10,35 @@ parameter_container.parameter_key_map = containers.Map; % we do this because eve
 if strcmp(dcc_obj.link_struct(1).type,'mdh')
     % Add the moving camera to end effector modified 6dof dh
     idx_map = dcc_obj.link_struct(1).index_map;
-    default_values = dcc_obj.link_struct(1).default_values;
+    dvs = dcc_obj.link_struct(1).default_values;
     
     assert(length(idx_map)==6, 'idx_map wrong length!');
     
     if(idx_map(2)>0) % d parameter
-        d_opt_param = OptimizationParameter(MDHParamD(default_values(2)), 1, 'mdh_d_1');
+        d_opt_param = OptimizationParameter(MDHParamD(dvs(2)), 1, 'mdh_d_1');
         parameter_container.addParameter(d_opt_param);
     end
     if(idx_map(3)>0) % r parameter
-        r_opt_param = OptimizationParameter(MDHParamR(default_values(3)), 1, 'mdh_r_1');
+        r_opt_param = OptimizationParameter(MDHParamR(dvs(3)), 1, 'mdh_r_1');
         parameter_container.addParameter(r_opt_param);
     end
     if(idx_map(4)>0) % alpha parameter
-        alpha_opt_param = OptimizationParameter(MDHParamAlpha(default_values(4)), 1, 'mdh_alpha_1');
+        alpha_opt_param = OptimizationParameter(MDHParamAlpha(dvs(4)), 1, 'mdh_alpha_1');
         parameter_container.addParameter(alpha_opt_param);
     end
     if(idx_map(5)>0) % beta parameter
-        beta_opt_param = OptimizationParameter(MDHParamBeta(default_values(5)), 1, 'mdh_beta_1');
+        beta_opt_param = OptimizationParameter(MDHParamBeta(dvs(5)), 1, 'mdh_beta_1');
         parameter_container.addParameter(beta_opt_param);
     end
     if(idx_map(6)>0) % y parameter
-        y_opt_param = OptimizationParameter(MDHParamY(default_values(6)), 1, 'mdh_y_1');
+        y_opt_param = OptimizationParameter(MDHParamY(dvs(6)), 1, 'mdh_y_1');
         parameter_container.addParameter(y_opt_param);
     end
     
 elseif strcmp(dcc_obj.link_struct(1).type,'6dof')                                               
     % Add the moving camera to end effector transformation to the parameter container
-    default_values = dcc_obj.link_struct(1).default_values;
-    T_M =  Transformation([default_values(1) default_values(2) default_values(3) default_values(4) default_values(5) default_values(6)]);
+    dvs = dcc_obj.link_struct(1).default_values;
+    T_M =  Transformation([dvs(1) dvs(2) dvs(3) dvs(4) dvs(5) dvs(6)]);
     O_M = OptimizationParameter(T_M, 6, 'T_EM');
     parameter_container.addParameter(O_M);
 end
@@ -51,7 +51,7 @@ for i=1:num_dh_links
     % we have them in the parameter file order of static->moving, but we
     % want to add them in the order of moving->static
     idx_map = dcc_obj.link_struct(i+1).index_map;
-    default_values = dcc_obj.link_struct(i+1).default_values;
+    dvs = dcc_obj.link_struct(i+1).default_values;
     
     assert(length(idx_map)==4, 'idx_map wrong length!');
     
@@ -61,17 +61,17 @@ for i=1:num_dh_links
     
     if(idx_map(2)>0) % d parameter
         key = strcat('dh_d_', int2str(i));
-        d_opt_param = OptimizationParameter(DHParamD(default_values(2)), 1, key);
+        d_opt_param = OptimizationParameter(DHParamD(dvs(2)), 1, key);
         parameter_container.addParameter(d_opt_param);
     end
     if(idx_map(3)>0) % r parameter
         key = strcat('dh_r_', int2str(i));
-        r_opt_param = OptimizationParameter(DHParamR(default_values(3)), 1, key);
+        r_opt_param = OptimizationParameter(DHParamR(dvs(3)), 1, key);
         parameter_container.addParameter(r_opt_param);
     end
     if(idx_map(4)>0) % alpha parameter
         key = strcat('dh_alpha_', int2str(i));
-        alpha_opt_param = OptimizationParameter(DHParamAlpha(default_values(4)), 1, key);
+        alpha_opt_param = OptimizationParameter(DHParamAlpha(dvs(4)), 1, key);
         parameter_container.addParameter(alpha_opt_param);
     end
 end
@@ -79,34 +79,37 @@ end
 % Add the last 6dof parameter block
 static_count = 1;
 for m=1+num_dh_links+1:length(dcc_obj.link_struct)
-    default_values = dcc_obj.link_struct(m).default_values; % first one is the static camera
-    idx_map = dcc_obj.link_struct(m).index_map;
-    if strcmp(dcc_obj.link_struct(m).type,'4dof')
+    link_struct = dcc_obj.link_struct(m);
+    dvs = link_struct.default_values; % first one is the static camera
+    idx_map = link_struct.index_map;
+    if strcmp(link_struct.type,'4dof')
         if(idx_map(1)>0) % alpha parameter
             key = strcat('4dof_rx_', num2str(static_count));
-            rx_opt_param = OptimizationParameter(Rx4DofParam(default_values(1)), 1, key);
+            rx_opt_param = OptimizationParameter(Rx4DofParam(dvs(1)), 1, key);
             parameter_container.addParameter(rx_opt_param);
         end
         if(idx_map(2)>0) % alpha parameter
             key = strcat('4dof_ry_', num2str(static_count));
-            ry_opt_param = OptimizationParameter(Ry4DofParam(default_values(2)), 1, key);
+            ry_opt_param = OptimizationParameter(Ry4DofParam(dvs(2)), 1, key);
             parameter_container.addParameter(ry_opt_param);
         end
         if(idx_map(3)>0) % alpha parameter
             key = strcat('4dof_tx_', num2str(static_count));
-            tx_opt_param = OptimizationParameter(Tx4DofParam(default_values(3)), 1, key);
+            tx_opt_param = OptimizationParameter(Tx4DofParam(dvs(3)), 1, key);
             parameter_container.addParameter(tx_opt_param);
         end
         if(idx_map(4)>0) % alpha parameter
             key = strcat('4dof_ty_', num2str(static_count));
-            ty_opt_param = OptimizationParameter(Ty4DofParam(default_values(4)), 1, key);
+            ty_opt_param = OptimizationParameter(Ty4DofParam(dvs(4)), 1, key);
             parameter_container.addParameter(ty_opt_param);
         end
     end
-    if strcmp(dcc_obj.link_struct(m).type,'6dof')
-        T_S = Transformation([default_values(1) default_values(2) default_values(3) default_values(4) default_values(5) default_values(6)]);
-        O_S = OptimizationParameter(T_S, 6, strcat('T_S',num2str(static_count),'B'));
-        parameter_container.addParameter(O_S);
+    if strcmp(link_struct.type,'6dof')
+        T_S = Transformation([dvs(1) dvs(2) dvs(3) dvs(4) dvs(5) dvs(6)]);
+        if any(idx_map>-1)
+            O_S = OptimizationParameter(T_S, 6, strcat('T_S',num2str(static_count),'B'));
+            parameter_container.addParameter(O_S);
+        end
     end
     static_count = static_count+1;
 end
