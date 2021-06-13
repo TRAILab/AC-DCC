@@ -1,4 +1,4 @@
-function [residual, J_total, calib_error] = DCCResidualOneWayPoseLoop(parameter_container, measurement_set, dcc_obj)
+function [white_residual, white_J_total, calib_error] = DCCResidualOneWayPoseLoop(parameter_container, measurement_set, dcc_obj)
 
 optimize_theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
 joint_angles = measurement_set.theta_vec;
@@ -36,8 +36,8 @@ gimbal_cov = (J_mm_right*J_SW_MW)*measurement_set.T_CW_cov{1}*(J_SW_MW'*J_mm_rig
 total_cov = static_cov + gimbal_cov;
 total_info = inv(total_cov);
 L = chol(total_info, 'lower');
-J_total = L'*J_total;
-residual = L'*residual;
+white_J_total = L'*J_total;
+white_residual = L'*residual;
 
 % Caluclate pixel error and pose error
 static_pts = applyTransform(T_SW_est.matrix, measurement_set.target_points{static_cam_num+1});
