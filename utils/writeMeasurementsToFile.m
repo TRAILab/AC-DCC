@@ -5,18 +5,15 @@ world_T_target = sim_obj.transforms.world_T_target;
 target_pts = sim_obj.target_pts;
 folder_path = strcat(sim_obj.data_files.folder_path, sim_obj.data_files.measurement_type);
 encoder_angles_rad = input_angles;
-num_collected_measurements = sim_obj.num_collected_measurements;
 optimize_theta_flag_vec = sim_obj.optimize_theta_flag_vec;
-successful_measurement_collection_flag = zeros(size(input_angles,1),1);
 noisy_encoder_angles_rad_list = zeros(size(input_angles));
-bad_measurement_num = [];
 all_measurement_pixel_error_mean = zeros(size(encoder_angles_rad,1),length(sim_obj.cameras));
 
 opt_problem = setupOptimizationProblem(sim_obj, []);
 
-for i=1:size(encoder_angles_rad,1)
+for meas_num=1:size(encoder_angles_rad,1)
     
-    fprintf(['\n',num2str(i),' ==================================\n']);
+    fprintf(['\n',num2str(meas_num),' ==================================\n']);
     
     % We want to add noise to the encoder angle before we move to get the
     % measurement. Eg. If we have to collect a measurement from 20 deg, the
@@ -24,7 +21,7 @@ for i=1:size(encoder_angles_rad,1)
     % encoder std dev and get the measurement. However it should report the
     % true encoder angle in the measurement (here 20 deg).
     % Add noise to encoder angles
-    noisy_encoder_angles_rad = addNoise(encoder_angles_rad(i,:), 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
+    noisy_encoder_angles_rad = addNoise(encoder_angles_rad(meas_num,:), 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
     
     % Randomly move the base
 %     if simulation_object.move_base
@@ -37,13 +34,7 @@ for i=1:size(encoder_angles_rad,1)
     
     % Display the object. Returns transforms for use at other places
     T_WC_list = displaySimulationObject(sim_obj, noisy_encoder_angles_rad, opt_problem);
-    
-    cam_T_target_list = {};
-    cam_success_list = [];
-    L2_error_cam_list = {};
-    target_pts_seen_in_cam_list = {};
-    noisy_cam_pix_on_plane_list = {};
-    
+
     % Go through all cameras
     for c=1:length(sim_obj.cameras)
         
@@ -69,50 +60,30 @@ for i=1:size(encoder_angles_rad,1)
         target_pts_seen_in_cam = target_pts(cam_indices_on_plane,:);
         
         if size(target_pts_seen_in_cam, 1)>4
-            disp(strcat('Solving PnP for Cam: ', sim_obj.cameras{c}.sensor_name));
+            disp(strcat("Solving PnP for Cam: ", sim_obj.cameras{c}.sensor_name));
             cam_T_target_orig = w_T_cam\world_T_target;
             noisy_cam_T_target = addNoise(cam_T_target_orig, 'transformation', sim_obj.transformation_noise, []);
-            [cam_T_target, L2_error] = solvePnPBA(target_pts_seen_in_cam, noisy_cam_pix_on_plane, sim_obj.cameras{c}, noisy_cam_T_target);
+            [T_CW, L2_error] = solvePnPBA(target_pts_seen_in_cam, noisy_cam_pix_on_plane, sim_obj.cameras{c}, noisy_cam_T_target);
+        else
+            L2_error.mean = -2;
         end
         
-        cam_T_target_list(c) = {cam_T_target};
-        cam_success_list(c) = L2_error.mean < sim_obj.reprojection_threshold;
-        L2_error_cam_list{c} = L2_error;
-        target_pts_seen_in_cam_list(c) = {target_pts_seen_in_cam};
-        noisy_cam_pix_on_plane_list(c) = {noisy_cam_pix_on_plane};
-        
-        disp(strcat('Average error on: ', sim_obj.cameras{c}.sensor_name,'=',num2str(L2_error.mean)));
+        disp(strcat("Average error on: ", sim_obj.cameras{c}.sensor_name, "=", num2str(L2_error.mean)));
         disp(' ');
-        all_measurement_pixel_error_mean(i,c) = L2_error.mean;
-    end
+        all_measurement_pixel_error_mean(meas_num,c) = L2_error.mean;
     
-    % Write measurement to file.
-    if sum(cam_success_list) == length(cam_success_list)
-        successful_measurement_collection_flag(i) = 1;
-        num_collected_measurements = num_collected_measurements + 1;
-        noisy_encoder_angles_rad_list(num_collected_measurements, :) = noisy_encoder_angles_rad;
-        
-        for c=1:length(sim_obj.cameras)
-            pts_pix = [target_pts_seen_in_cam_list{c} noisy_cam_pix_on_plane_list{c}];
-            writeToFile(num_collected_measurements, sim_obj.cameras{c}.sensor_name, folder_path, pts_pix, cam_T_target_list{c}, encoder_angles_rad(i,:));
-            display(strcat(['Wrote measurement for encoder set in deg:', num2str(rad2deg(noisy_encoder_angles_rad)), ' with ', num2str(size(target_pts_seen_in_cam_list{c},1)), ' ',sim_obj.cameras{c}.sensor_name,' points.']));
+        % Write measurement to file.
+        if L2_error.mean < sim_obj.reprojection_threshold && L2_error.mean>-1
+            noisy_encoder_angles_rad_list(meas_num, :) = noisy_encoder_angles_rad;
+            pts_pix = [target_pts_seen_in_cam noisy_cam_pix_on_plane];
+            writeToFile(sim_obj.start_index + meas_num, sim_obj.cameras{c}.sensor_name, folder_path, pts_pix, T_CW, encoder_angles_rad(meas_num,:));
+            display(strcat("Wrote measurement for encoder set in deg: ", num2str(rad2deg(noisy_encoder_angles_rad)), " with ", num2str(size(target_pts_seen_in_cam,1)), " ",sim_obj.cameras{c}.sensor_name," points."));
+        else
+            display(strcat("Could not write to file: ", sim_obj.cameras{c}.sensor_name, " with error ", num2str(L2_error.mean)));
         end
-        
-        sim_obj.num_collected_measurements = sim_obj.num_collected_measurements + 1;
-        
-        disp('---------------------------------------------------------------');
-    else
-        disp('Could not write to file, reprojection error was high');
-        display(strcat(['Average Static1 Error ',num2str(avg_err_static1)]));
-        display(strcat(['Average Static2 Error ',num2str(avg_err_static2)]));
-        display(strcat(['Average Gimbal Error ',num2str(avg_err_gimbal)]));
-        bad_measurement_num = [bad_measurement_num 1];
     end
-
+    disp('---------------------------------------------------------------');
 end
-
-fprintf(strcat('Collected \t',num2str(num_collected_measurements),'/',num2str(size(encoder_angles_rad,1)),' measurements'));
-sim_obj.bad_measurement_num = bad_measurement_num;
 
 %% Write noisy encoder angles to a new file
 complete_path = strcat(folder_path, 'true_encoder_angles.txt');
@@ -122,13 +93,13 @@ writematrix(noisy_encoder_angles_rad_list, complete_path);
 fclose(fileID);
 
 %% Plot the figure of the mean reprojection error for each measurment and camera
-for i=1:length(sim_obj.cameras)
+for c=1:length(sim_obj.cameras)
     callFigure('Measurement Set Reproj Error');
-    subplot(length(sim_obj.cameras), 1, i);
-    bar(all_measurement_pixel_error_mean(:,i));
+    subplot(length(sim_obj.cameras), 1, c);
+    bar(all_measurement_pixel_error_mean(:,c));
     hold on;
     xticks(1:2:length(all_measurement_pixel_error_mean));
-    temp_cam_name = string(sim_obj.cameras{i}.sensor_name);
+    temp_cam_name = string(sim_obj.cameras{c}.sensor_name);
     temp_cam_name = join(split(temp_cam_name,'_'));
-    title([strcat('Avg pix error for each measurement set for:- ',temp_cam_name),strcat(' is mean: ', num2str(mean(all_measurement_pixel_error_mean(:,i))), ' and std: ', num2str(std(all_measurement_pixel_error_mean(:,i))))]);
+    title([strcat('Avg pix error for each measurement set for:- ',temp_cam_name),strcat(' is mean: ', num2str(mean(all_measurement_pixel_error_mean(:,c))), ' and std: ', num2str(std(all_measurement_pixel_error_mean(:,c))))]);
 end

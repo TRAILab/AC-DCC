@@ -1,8 +1,7 @@
 function single_measurement_set = loadDataGroup(seq_num, camera_group, data_files)
 
 % Loads a data file and computes pixel error between coresponding points
-% seen in both images. Also stores corresponding 3D points and pixel
-% locations.
+% seen in both images. Also stores corresponding 3D points and pixel locations.
 
 num_cameras = length(camera_group);
 
@@ -11,15 +10,21 @@ for i=1:num_cameras
     camera_name = camera_group{i}.sensor_name; 
     file_string = strcat(data_files.folder_path, data_files.measurement_type, num2str(seq_num),'_',camera_name,'.txt');
     
-    assert(isfile(file_string)==1, 'The file does not exist');
+    if isfile(file_string)
+        [T_CW, T_CW_cov, target_points, pixels, gimbal_angles] = loadSingleMeasurement(file_string);
 
-    [T_CW, T_CW_cov, target_points, pixels, gimbal_angles] = loadSingleMeasurement(file_string);
-    
-    % Calculate the PnP sanity check
-    if ~isempty(target_points) && ~isempty(pixels)
-        [T_CW_data, ~] = solvePnPBA(target_points, pixels, camera_group{i}, T_CW);
-        T_CW = T_CW_data.matrix;
-        T_CW_cov = T_CW_data.cov;
+        % Calculate the PnP sanity check
+        if ~isempty(target_points) && ~isempty(pixels)
+            [T_CW_data, ~] = solvePnPBA(target_points, pixels, camera_group{i}, T_CW);
+            T_CW = T_CW_data.matrix;
+            T_CW_cov = T_CW_data.cov;
+        end
+    else
+        T_CW = [];
+        T_CW_cov = [];
+        target_points = [];
+        pixels = [];
+        gimbal_angles = [];
     end
     
     single_measurement_set(i).T_CW = T_CW;

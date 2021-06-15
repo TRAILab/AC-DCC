@@ -23,12 +23,13 @@ import igraph
 import re
 import yaml
 
-input_folder_path = '/home/jrebello/new_drone/'
-output_folder_path = '/home/jrebello/new_drone/data/'
+input_folder_path = '/home/jrebello/test_combining/test2/'
+output_folder_path = '/home/jrebello/test_combining/'
 encoder_filename = 'encoder_deg.txt'
 target_filename = 'target.yaml'
-camera_names = ['gimbal','static1']
+camera_names = ['gimbal','static2']
 num_images = 10
+start_idx = 9
 
 # make numpy print prettier
 np.set_printoptions(suppress=True)
@@ -121,7 +122,7 @@ class MeasurementGenerator(object):
                     T_t_c = observation.T_t_c()
                     T_c_t = np.linalg.inv(T_t_c.T())
 
-                    output_file_name = str(image_num) + "_" + camera_name + str(".txt")
+                    output_file_name = str(image_num + start_idx) + "_" + camera_name + str(".txt")
 
                     # write the gridpoints to file
                     if not os.path.exists(output_folder_path):

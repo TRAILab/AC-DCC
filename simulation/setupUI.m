@@ -1,14 +1,17 @@
-function setupUI(simulation_object)
+function setupUI(sim_obj)
 
 % UI to display sliders
 
 global sliders
 
 sliders = figure('Name','UI');
+disp("===========================================");
 disp('Please note the angles J0, J1, J2 .. start from the last joint (the one closest to the end effector) and proceed to the base joint');
-combined_DH_links = simulation_object.num_DH_links + simulation_object.use_modified_DH_flag;
+disp(strcat("Encoder Noise (Deg): Mean ", num2str(rad2deg(sim_obj.encoder_noise.mean)), " Std Dev ", num2str(rad2deg(sim_obj.encoder_noise.std_dev))));
+disp("===========================================");
+combined_DH_links = sim_obj.num_DH_links + sim_obj.use_modified_DH_flag;
 myhandles = guihandles(sliders);
-myhandles.simulation_object = simulation_object;
+myhandles.simulation_object = sim_obj;
 myhandles.angles = zeros(1,combined_DH_links);
 guidata(sliders,myhandles)
 names = ["J0","J1","J2","J3","J4","J5","J6"];
@@ -20,8 +23,8 @@ strt2 = strt1-30;
 
 for i=1:length(a)
     
-    if simulation_object.use_modified_DH_flag
-        bounds = rad2deg(simulation_object.link_struct(i).bounds);
+    if sim_obj.use_modified_DH_flag
+        bounds = rad2deg(sim_obj.link_struct(i).bounds);
         ui_control_vec(i) = uicontrol('Parent',sliders,'String',names(i),'Style','slider','Position',...
                                       [80,strt1-70*(a(i)-1),419,23],'value',(-bounds(1)+bounds(2))/2,...
                                       'min',0, 'max',-bounds(1)+bounds(2),'Callback',@joint_callback);
@@ -32,7 +35,7 @@ for i=1:length(a)
         d = uicontrol('Parent',sliders,'Style','text','Position',[500,strt2-70*(a(i)-1),50,50],...
                     'String',num2str(bounds(2)));
     else
-        bounds = rad2deg(simulation_object.link_struct(i+1).bounds);
+        bounds = rad2deg(sim_obj.link_struct(i+1).bounds);
         ui_control_vec(i) = uicontrol('Parent',sliders,'String',names(i),'Style','slider','Position',...
                                       [80,strt1-70*(a(i)-1),419,23],'value',(-bounds(1)+bounds(2))/2,...
                                       'min',0, 'max',-bounds(1)+bounds(2),'Callback',@joint_callback);
