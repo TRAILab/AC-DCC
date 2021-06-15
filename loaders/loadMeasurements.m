@@ -56,8 +56,12 @@ for meas_num_temp = 1:length(measurement_vec)
         current_meas.T_CW_cov{c} = single_measurement_set(c).T_CW_cov;
         current_meas.target_points{c} = single_measurement_set(c).target_points;
         current_meas.pixels{c} = single_measurement_set(c).pixels;
-        if c<=length(cameras)-1
-            current_meas.T_SM{c} = single_measurement_set(c+1).T_CW/single_measurement_set(1).T_CW; % T_SW*T_WM;
+        if c<=length(cameras)-1 
+            if ~isempty(single_measurement_set(c+1).T_CW)
+                current_meas.T_SM{c} = single_measurement_set(c+1).T_CW/single_measurement_set(1).T_CW; % T_SW*T_WM;
+            else
+                current_meas.T_SM{c} = [];
+            end
         end
     end
     
@@ -72,16 +76,17 @@ dcc_obj.bad_meas_idxs = sort(dcc_obj.bad_meas_idxs);
 for i=1:length(dcc_obj.cameras)
     callFigure('Measurement Set Reproj Error');
     subplot(length(dcc_obj.cameras), 1, i);
-    bar(avg_pix_error_vec(:,i));
+    ape = avg_pix_error_vec(:,i);
+    bar(ape);
     hold on;
     plot(xlim,[reprojection_threshold reprojection_threshold], 'r')
     xticks(1:2:length(measurement_vec));
     temp_cam_name = string(dcc_obj.cameras{i}.sensor_name);
     temp_cam_name = join(split(temp_cam_name,'_'));
-    title([strcat('Avg pix error for each measurement set for:- ',temp_cam_name),strcat(' is mean: ', num2str(mean(avg_pix_error_vec(:,i))), ' and std: ', num2str(std(avg_pix_error_vec(:,i))))]);
+    title([strcat('Avg pix error for each measurement set for:- ',temp_cam_name),strcat(' is mean: ', num2str(mean(ape(ape>0))), ' and std: ', num2str(std(ape(ape>0))))]);
     scatter(1:size(avg_pix_error_vec,1), max_pix_error_vec(:,i), 'filled', 'k');
     scatter(1:size(avg_pix_error_vec,1), min_pix_error_vec(:,i), 'filled', 'k');
-    [values,indices] = maxk(avg_pix_error_vec(:,i), 9);
+    [values,indices] = maxk(ape, 9);
     if i==1 && dcc_obj.show_real_world_images
         for j=1:length(values)
             figure(fig_num+i);

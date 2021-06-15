@@ -76,7 +76,7 @@ for meas_num=1:size(encoder_angles_rad,1)
         if L2_error.mean < sim_obj.reprojection_threshold && L2_error.mean>-1
             noisy_encoder_angles_rad_list(meas_num, :) = noisy_encoder_angles_rad;
             pts_pix = [target_pts_seen_in_cam noisy_cam_pix_on_plane];
-            writeToFile(sim_obj.start_index + meas_num, sim_obj.cameras{c}.sensor_name, folder_path, pts_pix, T_CW, encoder_angles_rad(meas_num,:));
+            writeToFile(sim_obj.last_index + meas_num, sim_obj.cameras{c}.sensor_name, folder_path, pts_pix, T_CW, encoder_angles_rad(meas_num,:));
             display(strcat("Wrote measurement for encoder set in deg: ", num2str(rad2deg(noisy_encoder_angles_rad)), " with ", num2str(size(target_pts_seen_in_cam,1)), " ",sim_obj.cameras{c}.sensor_name," points."));
         else
             display(strcat("Could not write to file: ", sim_obj.cameras{c}.sensor_name, " with error ", num2str(L2_error.mean)));

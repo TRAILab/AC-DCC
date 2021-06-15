@@ -13,21 +13,21 @@ axis_len = 0.4;                         % Length of the axis (for display purpos
 use_random_pts = 1;                     % Use random points in the environment (1) or a target (0) 
 move_base = 0;                          % Decide if you want to move the drone
 add_identity_residual = 0;              % This is the loop residual for all static cameras
-measurement_vec = 1:30;                 % What measurements do we want to analyze
+measurement_vec = 1:31;                 % What measurements do we want to analyze
 bad_meas_idxs = [];                     % If we know any measurements are bad
 real_image_mapping = containers.Map;    % Containers for real image mapping
 show_real_world_images = 0;             % Show the pixel error on real world images
 encoder_std_dev_deg = 10500;            % Uncertainty on the joint angle (This is just a high random value ?)
-have_true_encoder_values = 1;
+have_true_encoder_values = 0;
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/test_3_cam/';
-data_files.measurement_type = 'test/';
+data_files.folder_path = 'data/non_overlap_static/';
+data_files.measurement_type = 'train/';
 data_files.real_image_path = 'real_images/'; % This is combined with folder path
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
-data_files.calibration_params_file_path = strcat(data_files.folder_path, 'calibratedParams.txt'); % Use the initialization file for calibration
+data_files.calibration_params_file_path = strcat(data_files.folder_path, 'minimalparam_init.txt'); % Use the initialization file for calibration
 data_files.true_params_file_path = strcat(data_files.folder_path, 'minimalparam_true.txt');
 data_files.use_random_pts = use_random_pts;
 
