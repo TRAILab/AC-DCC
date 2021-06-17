@@ -3,6 +3,7 @@ function plotRealWorldImages(dcc_obj, opt_problem, measurement_set, avg_pixel_er
 real_image_path = dcc_obj.data_files.real_image_path;
 optimize_theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
 
+% Plot the error on the static camera images
 for c=1:length(dcc_obj.cameras)-1
     sensor_name = dcc_obj.cameras{c+1}.sensor_name;
     dcc_obj.static_cam_key = strcat('T_S',num2str(c),'B');
@@ -35,4 +36,14 @@ for c=1:length(dcc_obj.cameras)-1
         hold on;
         scatter(pixels(:,1),pixels(:,2),'rx');
     end
+end
+
+% Plot the gimbal images
+callFigure(strcat("Real World: ", dcc_obj.cameras{1}.sensor_name));
+clf;
+sensor_name = dcc_obj.cameras{1}.sensor_name;
+for m=1:9
+    subplot(3,3,m);
+    imshow(strcat(real_image_path, num2str(real_image_idxs(m)),'_', sensor_name, '.jpeg'));
+    title(strcat("Image ", num2str(real_image_idxs(m))));
 end
