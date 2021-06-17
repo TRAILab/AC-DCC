@@ -1,12 +1,13 @@
-function [measurement_set, dcc_obj] = loadMeasurements(measurement_vec, dcc_obj)
+function [measurement_set, dcc_obj] = loadMeasurements(dcc_obj)
 
-min_pix_error_vec = zeros(max(measurement_vec), length(dcc_obj.cameras));
-avg_pix_error_vec = zeros(max(measurement_vec), length(dcc_obj.cameras));
-max_pix_error_vec = zeros(max(measurement_vec), length(dcc_obj.cameras));
+num_measurements = dcc_obj.num_measurements;
+
+min_pix_error_vec = zeros(num_measurements, length(dcc_obj.cameras));
+avg_pix_error_vec = zeros(num_measurements, length(dcc_obj.cameras));
+max_pix_error_vec = zeros(num_measurements, length(dcc_obj.cameras));
 
 % Variables to hold measurement
 measurement_set = {};
-good_measurement = 0;
 cameras = dcc_obj.cameras;
 reprojection_threshold = dcc_obj.reprojection_threshold;
 dcc_obj.good_meas_idxs = [];
@@ -14,60 +15,64 @@ bad_meas_counter = 0;
 dcc_obj.encoder_collection = [];
 
 % Load measurements
-for meas_num_temp = 1:length(measurement_vec)
+for meas_num = 1:num_measurements
     
-    % Get the measurement number
-    meas_num = measurement_vec(meas_num_temp);
+    ignore_meas = 0;
     
-    if(~isempty(find(dcc_obj.bad_meas_idxs==meas_num, 1)))
+    if ismember(meas_num, dcc_obj.bad_meas_idxs)
         bad_meas_counter = bad_meas_counter + 1;
+        disp(strcat("Ignoring the measurement set ", num2str(meas_num)));
+        disp("********************************");
+        avg_pix_error_vec(meas_num, :) = -1;
+        min_pix_error_vec(meas_num, :) = -1;
+        max_pix_error_vec(meas_num, :) = -1;
         continue;
     end
     
     % Get the single measurement set
     single_measurement_set = loadDataGroup(meas_num, cameras, dcc_obj.data_files);
     
+    % Group all the errors together
     temp = [single_measurement_set(:).L2error];
-    single_set_mean_error = [temp(:).mean];
-    avg_pix_error_vec(meas_num_temp,:) = [temp(:).mean];
-    min_pix_error_vec(meas_num_temp,:) = [temp(:).min];
-    max_pix_error_vec(meas_num_temp,:) = [temp(:).max];
+    avg_pix_error_vec(meas_num,:) = [temp(:).mean];
+    min_pix_error_vec(meas_num,:) = [temp(:).min];
+    max_pix_error_vec(meas_num,:) = [temp(:).max];
     
-    if(max(single_set_mean_error)>reprojection_threshold)
-        bad_meas_counter = bad_meas_counter + 1;
-        dcc_obj.bad_meas_idxs = [dcc_obj.bad_meas_idxs; meas_num];
-        msg = ['Data group ', num2str(meas_num), ' has avg error ', num2str(max(single_set_mean_error)),' larger than threshold ', num2str(reprojection_threshold), ' ,skipping...'];
-        disp(msg);
-        continue;
-    else
-        % Display which meaurement
-        msg = [strcat('Loaded data group: ', num2str(meas_num)), ' with maximum average error: ', num2str(max(single_set_mean_error))];
-        display(msg);
-        good_measurement = good_measurement + 1;
-        dcc_obj.good_meas_idxs = [dcc_obj.good_meas_idxs; meas_num];
-        dcc_obj.real_image_mapping(num2str(good_measurement)) = good_measurement + bad_meas_counter;
-        dcc_obj.encoder_collection = [dcc_obj.encoder_collection; single_measurement_set(1).gimbal_angles];
-    end
-    
-    current_meas.theta_vec = single_measurement_set(1).gimbal_angles;
-    
+    % Go through each camera and determine if we should accept or reject
     for c=1:length(cameras)
         current_meas.T_CW{c} = single_measurement_set(c).T_CW;
         current_meas.T_CW_cov{c} = single_measurement_set(c).T_CW_cov;
         current_meas.target_points{c} = single_measurement_set(c).target_points;
         current_meas.pixels{c} = single_measurement_set(c).pixels;
-        if c<=length(cameras)-1 
-            if ~isempty(single_measurement_set(c+1).T_CW)
-                current_meas.T_SM{c} = single_measurement_set(c+1).T_CW/single_measurement_set(1).T_CW; % T_SW*T_WM;
+        
+        if c==1
+            re = avg_pix_error_vec(meas_num, c);
+            if isempty(current_meas.T_CW{c}) || re > reprojection_threshold
+                disp(strcat("Ignoring the measurement set ", num2str(meas_num), " ,RE: ", num2str(re)));
+                disp("********************************");
+                bad_meas_counter = bad_meas_counter + 1;
+                dcc_obj.bad_meas_idxs = [dcc_obj.bad_meas_idxs, meas_num];
+                ignore_meas = 1;
+                avg_pix_error_vec(meas_num, :) = -1;
+                min_pix_error_vec(meas_num, :) = -1;
+                max_pix_error_vec(meas_num, :) = -1;
+                break;
+            end
+        else
+            if ~isempty(single_measurement_set(c).T_CW)
+                current_meas.T_SM{c-1} = single_measurement_set(c).T_CW/single_measurement_set(1).T_CW; % T_SW*T_WM;
             else
-                current_meas.T_SM{c} = [];
+                current_meas.T_SM{c-1} = [];
             end
         end
     end
-    
-    % Add to measurement set
-    measurement_set{good_measurement} = current_meas;
-    
+    if ~ignore_meas
+        disp(strcat("Adding the measurement set ",num2str(meas_num)));
+        disp("==================================");
+        current_meas.theta_vec = single_measurement_set(1).gimbal_angles;
+        measurement_set = [measurement_set {current_meas}];  
+        dcc_obj.encoder_collection = [dcc_obj.encoder_collection; current_meas.theta_vec];
+    end
 end
 
 dcc_obj.bad_meas_idxs = sort(dcc_obj.bad_meas_idxs);
@@ -80,21 +85,12 @@ for i=1:length(dcc_obj.cameras)
     bar(ape);
     hold on;
     plot(xlim,[reprojection_threshold reprojection_threshold], 'r')
-    xticks(1:2:length(measurement_vec));
+    xticks(1:2:num_measurements);
     temp_cam_name = string(dcc_obj.cameras{i}.sensor_name);
     temp_cam_name = join(split(temp_cam_name,'_'));
     title([strcat('Avg pix error for each measurement set for:- ',temp_cam_name),strcat(' is mean: ', num2str(mean(ape(ape>0))), ' and std: ', num2str(std(ape(ape>0))))]);
     scatter(1:size(avg_pix_error_vec,1), max_pix_error_vec(:,i), 'filled', 'k');
     scatter(1:size(avg_pix_error_vec,1), min_pix_error_vec(:,i), 'filled', 'k');
-    [values,indices] = maxk(ape, 9);
-    if i==1 && dcc_obj.show_real_world_images
-        for j=1:length(values)
-            figure(fig_num+i);
-            subplot(3,3,j);
-            imshow(strcat(dcc_obj.data_files.folder_path,dcc_obj.data_files.real_image_path,dcc_obj.camera_intrinsics(i).name,'_',num2str(indices(j)),'.jpeg'));
-            title(['Img=',num2str(indices(j)),', avg=',num2str(values(j)),', max= ', num2str(max_pix_error_vec(indices(j),i))]);
-        end
-    end
 end
 
 callFigure('Encoder Measurements');

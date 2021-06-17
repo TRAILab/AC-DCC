@@ -23,13 +23,13 @@ import igraph
 import re
 import yaml
 
-input_folder_path = '/home/jrebello/test_combining/test2/'
-output_folder_path = '/home/jrebello/test_combining/'
+input_folder_path = '/home/jrebello/projects/calibration_data/ijrr/jun15/'
+output_folder_path = '/home/jrebello/projects/AC-DCC/data/realworld1/train/'
 encoder_filename = 'encoder_deg.txt'
 target_filename = 'target.yaml'
-camera_names = ['gimbal','static2']
-num_images = 10
-start_idx = 9
+camera_names = ['gimbal','static1','static2']
+num_images = 120
+start_idx = 0
 
 # make numpy print prettier
 np.set_printoptions(suppress=True)
@@ -105,8 +105,8 @@ class MeasurementGenerator(object):
             camera = self.cameras[camera_num]
             camera_name = camera_names[camera_num]
             detector = acv.GridDetector(camera.geometry, self.target.grid, self.target.options)
-            for image_num in range(1, num_images):
-                image_path = input_folder_path + camera_name + '_' + str(image_num) + '.jpeg'
+            for image_num in range(1, num_images+1):
+                image_path = input_folder_path + str(image_num) + '_' + camera_name   + '.jpeg'
                 print(image_path)
                 image = cv2.imread(image_path, 0)
                 np_image = np.array(image)
@@ -115,7 +115,7 @@ class MeasurementGenerator(object):
 
                 if success:
                     print("Writing image" + ' ' + str(image_num))
-                    curr_imu_angle = self.imu_angles_deg[image_num]
+                    curr_imu_angle = self.imu_angles_deg[image_num-1]
                     [image_corners, reproj_corners, meanReprojectionError] = self.generateMonoview(camera_num, np_image, observation, success)
                     
                     target_corners = observation.getCornersTargetFrame()
@@ -133,7 +133,7 @@ class MeasurementGenerator(object):
 
                     outfile.write("T_CW:\n" )
                     tmatrix = np.array(T_c_t)
-                    tmatrix_str = '\n'.join(" ".join('%0.5f' %x for x in y) for y in tmatrix)
+                    tmatrix_str = '\n'.join(" ".join('%0.10f' %x for x in y) for y in tmatrix)
                     outfile.write(tmatrix_str)
                     outfile.write("\n\n")
 
@@ -208,7 +208,7 @@ class MeasurementGenerator(object):
             cv2.putText(np_image, "Detection failed...", (np_image.shape[0]/2,np_image.shape[1]/5), cv2.FONT_HERSHEY_SIMPLEX, fontScale=1.5, color=(0, 0, 255), thickness=2)
 
         cv2.imshow(window_name, np_image)
-        cv2.waitKey(5)
+        cv2.waitKey(1)
 
         if obs_valid:
             return [cornersImage, cornersReproj, meanReprojectionError]

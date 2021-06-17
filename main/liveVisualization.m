@@ -17,10 +17,10 @@ encoder_noise.std_dev = 0;             % How much noise to add to the encoder va
 use_random_pts = 0;                     % Use random points in the environment (1) or a target (0)
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/non_overlap_static/';
+data_files.folder_path = 'data/realworld1/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
-data_files.transforms_file_path = strcat(data_files.folder_path,'transforms2.txt');
+data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
 data_files.calibration_params_file_path = strcat(data_files.folder_path,'minimalparam_true.txt');
 data_files.use_random_pts = use_random_pts;

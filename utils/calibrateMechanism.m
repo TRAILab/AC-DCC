@@ -8,9 +8,9 @@ max_iterations = opt_params.max_iterations;
 
 num_measurement_sets = length(measurement_set);
 for i=1:max_iterations
-    avg_pixel_error = zeros(length(dcc_obj.cameras)-1, num_measurement_sets);
-    avg_rot_error = zeros(length(dcc_obj.cameras)-1, num_measurement_sets);
-    avg_trans_error = zeros(length(dcc_obj.cameras)-1, num_measurement_sets);
+    avg_pixel_error = zeros(num_measurement_sets, length(dcc_obj.cameras)-1);
+    avg_rot_error = zeros(num_measurement_sets, length(dcc_obj.cameras)-1);
+    avg_trans_error = zeros(num_measurement_sets, length(dcc_obj.cameras)-1);
     
     % Add all the residual terms.
     for j=1:num_measurement_sets
@@ -21,9 +21,9 @@ for i=1:max_iterations
             dcc_obj.static_cam_key = strcat('T_S',num2str(c),'B');
             if ~isempty(measurement_struct.T_SM{c})
                 calib_error = opt_problem.addDCCResidualPoseLoop(measurement_struct, dcc_obj);
-                avg_pixel_error(c,j) = calib_error.pixel_error.mean;
-                avg_rot_error(c,j) = calib_error.tr_error(1);
-                avg_trans_error(c,j) = calib_error.tr_error(2);
+                avg_pixel_error(j,c) = calib_error.pixel_error.mean;
+                avg_rot_error(j,c) = calib_error.tr_error(1);
+                avg_trans_error(j,c) = calib_error.tr_error(2);
             end
         end
         if length(dcc_obj.cameras)>=3 && dcc_obj.add_identity_residual
@@ -36,8 +36,8 @@ for i=1:max_iterations
     avg_error.avg_rot_error = avg_rot_error;
     avg_error.avg_trans_error = avg_trans_error;
     plotErrorStats(dcc_obj, avg_error);
-    if mod(i,10)==1 && dcc_obj.show_real_world_images
-        display_real_world_pixel_error(dcc_obj, opt_problem, measurement_set, avg_pixel_error);
+    if (mod(i,10)==1 || i==max_iterations) && dcc_obj.show_real_world_images
+        plotRealWorldImages(dcc_obj, opt_problem, measurement_set, avg_pixel_error);
     end
     
     %% Solve the linear system.
