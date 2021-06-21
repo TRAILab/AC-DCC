@@ -61,6 +61,13 @@ for meas_num = 1:num_measurements
         else
             if ~isempty(single_measurement_set(c).T_CW)
                 current_meas.T_SM{c-1} = single_measurement_set(c).T_CW/single_measurement_set(1).T_CW; % T_SW*T_WM;
+                gimbal_target_points = single_measurement_set(1).target_points;
+                static_target_points = single_measurement_set(c).target_points;
+                static_pixels = single_measurement_set(c).pixels;
+                [~, common_gimbal_idxs, common_static_idxs] = intersect(gimbal_target_points, static_target_points,'rows');
+                common_target_points = gimbal_target_points(common_gimbal_idxs,:);
+                current_meas.common_target_points{c-1} = common_target_points;
+                current_meas.common_pixels{c-1} = static_pixels(common_static_idxs,:);
             else
                 current_meas.T_SM{c-1} = [];
             end

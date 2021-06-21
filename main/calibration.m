@@ -8,17 +8,17 @@ fclose('all');
 format long
 
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
-reprojection_threshold = 5.0;           % Allowed reprojection threshold to decide if a measurement is good or not
+reprojection_threshold = 0.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
 use_random_pts = 1;                     % Use random points in the environment (1) or a target (0) 
 move_base = 0;                          % Decide if you want to move the drone
 add_identity_residual = 0;              % This is the loop residual for all static cameras
-num_measurements = 10;                 % What measurements do we want to analyze
+num_measurements = 10;                  % What measurements do we want to analyze
 bad_meas_idxs = [];                     % If we know any measurements are bad
-real_image_mapping = containers.Map;    % Containers for real image mapping
 show_real_world_images = 1;             % Show the pixel error on real world images
 encoder_std_dev_deg = 10500;            % Uncertainty on the joint angle (This is just a high random value ?)
 have_true_encoder_values = 0;
+reproj_error_formulation = 0;
 
 % Data location #################################### <--- Important to go through each of these and modify the values
 data_files.folder_path = 'data/realworld1/';
@@ -38,11 +38,11 @@ dcc_obj.data_files = data_files;
 dcc_obj.optimize_theta_flag = sum(dcc_obj.optimize_theta_flag_vec)>0;
 dcc_obj.add_identity_residual = add_identity_residual;
 dcc_obj.bad_meas_idxs = bad_meas_idxs;
-dcc_obj.real_image_mapping = real_image_mapping;
 dcc_obj.show_real_world_images = show_real_world_images;
 dcc_obj.use_random_points = use_random_pts;
 dcc_obj.have_true_encoder_values = have_true_encoder_values;
 dcc_obj.num_measurements = num_measurements;
+dcc_obj.reproj_error_formulation = reproj_error_formulation;
 
 % Get measurements
 [measurement_set, dcc_obj] = loadMeasurements(dcc_obj);

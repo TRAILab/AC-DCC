@@ -20,10 +20,15 @@ for i=1:max_iterations
         for c=1:length(dcc_obj.cameras)-1
             dcc_obj.static_cam_key = strcat('T_S',num2str(c),'B');
             if ~isempty(measurement_struct.T_SM{c})
-                calib_error = opt_problem.addDCCResidualPoseLoop(measurement_struct, dcc_obj);
-                avg_pixel_error(j,c) = calib_error.pixel_error.mean;
-                avg_rot_error(j,c) = calib_error.tr_error(1);
-                avg_trans_error(j,c) = calib_error.tr_error(2);
+                if dcc_obj.reproj_error_formulation
+                    calib_error = opt_problem.addDCCReprojectionResidual(measurement_struct, dcc_obj);
+                    avg_pixel_error(j,c) = calib_error.pixel_error.mean;
+                else
+                    calib_error = opt_problem.addDCCPoseLoopResidual(measurement_struct, dcc_obj);
+                    avg_pixel_error(j,c) = calib_error.pixel_error.mean;
+                    avg_rot_error(j,c) = calib_error.tr_error(1);
+                    avg_trans_error(j,c) = calib_error.tr_error(2);
+                end
             end
         end
         if length(dcc_obj.cameras)>=3 && dcc_obj.add_identity_residual

@@ -43,24 +43,28 @@ classdef Problem<handle
             end   
         end
         
-        function [reprojection_vector] = addDCCResidualReprojection(obj, measurement_struct,configuration_object)
+        function [calib_error] = addDCCReprojectionResidual(obj, meas_struct, dcc_obj)
             
-            [residual_vector_whiten, J_whiten,reprojection_vector] = DCCResidualOneWayReprojection(obj.parameter_container,measurement_struct,configuration_object);
-            
-            % append the residual vector
-            obj.r = [obj.r; residual_vector_whiten];
-            % append the jacobian matrix
-            
-            obj.J  = [obj.J;J_whiten];
-            
-        end
-        
-        function [calib_error] = addDCCResidualPoseLoop(obj, measurement_struct, simulation_object)
-            [residual_vector, J_total, calib_error] = DCCResidualOneWayPoseLoop(obj.parameter_container, measurement_struct, simulation_object);
+            [residual_vector, J_total, calib_error] = DCCReprojectionResidual(obj.parameter_container, meas_struct, dcc_obj);
             
             % Rearrange Jacobian. Because it doesnt account for which
             % static camera is being considered
-            J_total = rearrangeNonThetaJacobian(simulation_object, J_total);
+            J_total = rearrangeNonThetaJacobian(dcc_obj, J_total);
+            
+            % append the residual vector
+            obj.r = [obj.r; residual_vector];
+            
+            % append the jacobian matrix
+            obj.J = [obj.J; J_total];
+            
+        end
+        
+        function [calib_error] = addDCCPoseLoopResidual(obj, meas_struct, dcc_obj)
+            [residual_vector, J_total, calib_error] = DCCPoseLoopResidual(obj.parameter_container, meas_struct, dcc_obj);
+            
+            % Rearrange Jacobian. Because it doesnt account for which
+            % static camera is being considered
+            J_total = rearrangeNonThetaJacobian(dcc_obj, J_total);
             
             % append the residual vector
             obj.r = [obj.r; residual_vector];

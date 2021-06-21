@@ -1,4 +1,4 @@
-function [white_residual, white_J_total, calib_error] = DCCResidualOneWayPoseLoop(parameter_container, measurement_set, dcc_obj)
+function [white_residual, white_J_total, calib_error] = DCCPoseLoopResidual(parameter_container, measurement_set, dcc_obj)
 
 optimize_theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
 joint_angles = measurement_set.theta_vec;
