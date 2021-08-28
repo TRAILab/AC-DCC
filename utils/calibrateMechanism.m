@@ -1,10 +1,10 @@
-function [dcc_obj, opt_problem] = calibrateMechanism(dcc_obj, opt_problem, opt_params, measurement_set)
+function [dcc_obj, opt_problem] = calibrateMechanism(dcc_obj, opt_problem, measurement_set)
 
 % Optimize to get calibration parameters
 opt_problem.clearLinearSystem();
-gradient_norm_threshold = opt_params.gradient_norm_threshold;
-step_norm_threshold = opt_params.step_norm_threshold;
-max_iterations = opt_params.max_iterations;
+gradient_norm_threshold = opt_problem.opt_params.gradient_norm_threshold;
+step_norm_threshold = opt_problem.opt_params.step_norm_threshold;
+max_iterations = opt_problem.opt_params.max_iterations;
 
 num_measurement_sets = length(measurement_set);
 for i=1:max_iterations
@@ -50,17 +50,26 @@ for i=1:max_iterations
         opt_problem.J = rearrangeThetaJacobian(dcc_obj, opt_problem.J, measurement_set);
     end
         
-    assert(rank(opt_problem.J)==size(opt_problem.J,2), strcat('The jacobian is rank deficient. Column size: ', ...
-        num2str(size(opt_problem.J,2)),' but rank is: ',num2str(rank(opt_problem.J))));
+    %assert(rank(opt_problem.J)==size(opt_problem.J,2), strcat('The jacobian is rank deficient. Column size: ', ...
+    %    num2str(size(opt_problem.J,2)),' but rank is: ',num2str(rank(opt_problem.J))));
+    if rank(opt_problem.J)~=size(opt_problem.J,2)
+        pause()
+    end
     
-    update_delta = opt_problem.solveLinearSystem();
-    opt_problem.updateParameters(0.1*update_delta);
+    if i<100
+        [update_delta, success] = opt_problem.solveLinearSystem();
+    else
+        opt_problem.opt_params.opt_type = 'GN';
+        [update_delta, success] = opt_problem.solveLinearSystem();
+    end
+    %update_delta = opt_problem.solveLinearSystem(measurement_set, dcc_obj);
+    %opt_problem.updateParameters(0.1*update_delta);
 
     S=sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
     disp(S);
     
     % check stopping criteria.
-    if( (norm(opt_problem.g)<=gradient_norm_threshold) ||(norm(update_delta)<=step_norm_threshold))
+    if( (norm(opt_problem.g)<=gradient_norm_threshold) ||(norm(update_delta)<=step_norm_threshold) || success)
         disp('Reached first order optimality threshold');
         %S=sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
         %disp(S);

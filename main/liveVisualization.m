@@ -10,19 +10,18 @@ global input_angles dsc_obj comb_fig orig_T_WB;
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
 reprojection_threshold = 1.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
-pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 pixel_noise.mean = 0;                   % Pixel noise mean
+pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
 encoder_noise.std_dev = 0;             % How much noise to add to the encoder values (deg)
 use_random_pts = 0;                     % Use random points in the environment (1) or a target (0)
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/realworld1/';
-data_files.measurement_type = 'train/';
-data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
+data_files.folder_path = 'data/landing/';
+data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
-data_files.calibration_params_file_path = strcat(data_files.folder_path,'minimalparam_true.txt');
+data_files.calibration_params_file_path = strcat(data_files.folder_path,'calibratedParams.txt');
 data_files.use_random_pts = use_random_pts;
 
 % Initialize simulation object

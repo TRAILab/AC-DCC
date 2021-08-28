@@ -16,9 +16,6 @@ classdef MDHParamBeta<handle
         function [] = manifoldPlus(obj,perturbation)
             obj.value = obj.value + perturbation;
         end
-        
-        %function [J_beta] = getJacobian(obj,d,r,alpha,input_vector )
-        %    [ J_beta ] = thetaJacobian( obj.value, d, r,alpha,input_vector );
-        %end
+
     end
 end

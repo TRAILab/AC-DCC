@@ -107,3 +107,5 @@ xlabel('Pitch');
 ylabel('Roll');
 zlabel('Yaw');
 title('Encoder angles in measurements');
+
+opt_problem.good_meas_idxs = setdiff(1:num_measurements, dcc_obj.bad_meas_idxs);

@@ -14,11 +14,8 @@ classdef MDHParamTheta<handle
         end
        
         function [] = manifoldPlus(obj,perturbation)
-            obj.value = obj.value + perturbation;
+            obj.value = wrapToPi(obj.value + perturbation);
         end
         
-        %function [J_theta] = getJacobian(obj,d,r,alpha,input_vector )
-        %    [ J_theta ] = thetaJacobian( obj.value, d, r,alpha,input_vector );
-        %end
     end
 end

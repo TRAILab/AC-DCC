@@ -11,7 +11,7 @@ for c=1:length(dcc_obj.cameras)-1
     clf;
     avg_pe = avg_pixel_error(:,c);
     [max_avg_pe, top_worse_idxs] = maxk(avg_pe,9);
-    real_image_idxs = getModifiedIdxs(dcc_obj.bad_meas_idxs, top_worse_idxs);
+    real_image_idxs = getModifiedIdxs(dcc_obj.num_measurements, dcc_obj.bad_meas_idxs, top_worse_idxs);
     for m=1:9
         top_worse_idx = top_worse_idxs(m);
         subplot(3,3,m);

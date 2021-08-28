@@ -18,12 +18,14 @@ parameter_container.addParameter(O1);
 opt_problem = Problem(parameter_container);
 
 % perform the optimization
-gradient_norm_threshold = 1e-6;
-step_norm_threshold = 1e-10;
-max_iterations = 500;
+opt_params.gradient_norm_threshold = 1e-6;
+opt_params.step_norm_threshold = 1e-10;
+opt_params.max_iterations = 500;
+opt_params.opt_type = 'GN';
+opt_problem.opt_params = opt_params;
 num_points = length(target_pts_3D);
 
-for i=1:max_iterations
+for i=1:opt_params.max_iterations
     
     % Add all the residual terms.
     for j=1:num_points
@@ -38,7 +40,7 @@ for i=1:max_iterations
     %disp(S);
     
     % check stopping criteria.
-    if( (norm(opt_problem.g)<=gradient_norm_threshold) ||(norm(update_delta)<=step_norm_threshold))
+    if( (norm(opt_problem.g)<=opt_params.gradient_norm_threshold) ||(norm(update_delta)<=opt_params.step_norm_threshold))
         disp('Reached first order optimality threshold');
         S=sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
         disp(S);

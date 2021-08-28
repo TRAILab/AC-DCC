@@ -13,30 +13,30 @@ format long
 reprojection_threshold = 1.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
 pixel_noise.mean = 0;                   % Pixel noise mean
-pixel_noise.std_dev = 0.0;              % Pixel noise std dev
+pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
-encoder_noise.std_dev = 0;             % How much noise to add to the encoder values (deg)
+encoder_noise.std_dev = 5;             % How much noise to add to the encoder values (deg)
 transformation_noise.trans.mean = 0;    % Transformation noise, translation
-transformation_noise.trans.std_dev = 0.0;  
+transformation_noise.trans.std_dev = 0.02;  
 transformation_noise.rot.mean = 0;      % Transformation noise, rotation
-transformation_noise.rot.std_dev = 0; 
-use_random_pts = 1;                     % Use random points in the environment (1) or a target (0)
+transformation_noise.rot.std_dev = 5; 
+use_random_pts = 0;                     % Use random points in the environment (1) or a target (0)
 angle_type = 'random';                  % Type of angles we want, (linear, random)
-num_random_angles = 1;                  % Number of random angles if random angle type
-last_index = 30;
-joint_limits = [-40 40;           % Angle Limits from which to collect measurements (deg). This should be a Nx2, where N = num of joints 
-                -25 25;           % First set represents the limits of the joint closer to the moving camera
-                -130 -50];        
-num_linear_angles_per_joint = [4;4;5];  % Number of angles per joint to collect measurements if linear angle type. This should be an Nx1 where N = num of joints.   
+num_random_angles = 30;                  % Number of random angles if random angle type
+last_index = 0;
+joint_limits = [-15 15;           % Angle Limits from which to collect measurements (deg). This should be a Nx2, where N = num of joints 
+                -15 15;           % First set represents the limits of the joint closer to the moving camera
+                -15 15];        
+num_linear_angles_per_joint = [3;3;4];  % Number of angles per joint to collect measurements if linear angle type. This should be an Nx1 where N = num of joints.   
 move_base = 0;                          % Decide if you want to move the drone
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/non_overlap_static/';
-data_files.measurement_type = 'train/';
-data_files.sensors_file_path = strcat(data_files.folder_path,'sensor_param.txt');
-data_files.transforms_file_path = strcat(data_files.folder_path,'transforms2.txt');
+data_files.folder_path = 'data/ijrr/reproj_poseloop_test/simulated/';
+data_files.measurement_type = 'test/';
+data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
+data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
-data_files.calibration_params_file_path = strcat(data_files.folder_path,'minimalparam_true.txt');
+data_files.calibration_params_file_path = strcat(data_files.folder_path,'trueParams.txt');
 data_files.use_random_pts = use_random_pts;
 
 %% Initialize simulation object

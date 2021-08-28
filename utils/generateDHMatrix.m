@@ -1,4 +1,4 @@
-function [ M ] = generateStandardDHMmatrix( theta,d,r,alpha)
+function [ M ] = generateDHMatrix( theta,d,r,alpha)
 %this function takes in the DH parameters and outputs the trans matrix
 %theta: angle between X_i and X_{i+1}
 %d: distance to common normal

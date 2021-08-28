@@ -16,9 +16,6 @@ classdef MDHParamR<handle
         function [] = manifoldPlus(obj,perturbation)
             obj.value = obj.value + perturbation;
         end
-        
-        %function [J_r] = getJacobian(obj,theta, d,alpha,input_vector )
-        %    [ J_r ] = rJacobian( theta, d, obj.value,alpha,input_vector );
-        %end
+
     end
 end

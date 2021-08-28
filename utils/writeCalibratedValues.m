@@ -4,7 +4,7 @@ format short;
 
 zero_limit = 1e-5;
 
-calibrated_file_id = fopen(strcat(dcc_obj.data_files.folder_path,'calibratedParams.txt'),'w');
+calibrated_file_id = fopen(strcat(dcc_obj.data_files.folder_path,'calibratedParams2.txt'),'w');
 parameter_container = opt_problem.parameter_container;
 link_structs = dcc_obj.link_struct;
 
@@ -81,7 +81,11 @@ for i=1:length(link_structs)
         offset_diff(abs(offset_diff)<zero_limit)=0;
         fprintf(calibrated_file_id, "%s",strcat(num2str(offset_diff)," "));
     end
-    fprintf(calibrated_file_id, "%s",strcat(num2str(zeros(1,length(index_map)))," "));
+    if contains(link_struct.type,'dh')
+        fprintf(calibrated_file_id, "%s",strcat(num2str([1 zeros(1,length(index_map)-1)])," "));
+    else
+        fprintf(calibrated_file_id, "%s",strcat(num2str(zeros(1,length(index_map)))," "));
+    end
     fprintf(calibrated_file_id, "%s\n",strcat(num2str(rad2deg(link_struct.bounds))," "));
 end
 

@@ -21,7 +21,7 @@ end
 transforms.world = t;
 
 % Read target to world transform
-while(~strcmp(tline,'world_T_target:'))
+while(~strcmp(tline,'T_WT:'))
     tline = fgetl(fid);
 end
 
@@ -35,7 +35,7 @@ end
 transforms.world_T_target = t;
 
 % Read base of mechanism to world transform
-while(~strcmp(tline,'world_T_base:'))
+while(~strcmp(tline,'T_WB:'))
     tline = fgetl(fid);
 end
 

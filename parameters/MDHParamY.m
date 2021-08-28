@@ -17,8 +17,5 @@ classdef MDHParamY<handle
             obj.value = obj.value + perturbation;
         end
         
-        %function [J_theta] = getJacobian(obj,d,r,alpha,input_vector )
-        %    [ J_theta ] = thetaJacobian( obj.value, d, r,alpha,input_vector );
-        %end
     end
 end
