@@ -21,7 +21,7 @@ CtC = C'*C;
 E = CtC - eye(3);
 err = max(abs(E));
 
-if err > 1e-10
+if err > 1e-7
     error('The rotation matrix is not valid. Maximum error: %f20.15\n', err);
 end
 

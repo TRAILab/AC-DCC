@@ -23,13 +23,13 @@ import igraph
 import re
 import yaml
 
-input_folder_path = '/home/jrebello/projects/calibration_data/ijrr/jun15/'
-output_folder_path = '/home/jrebello/projects/AC-DCC/data/realworld1/train/'
+input_folder_path = '/home/jrebello/projects/openvslam/ros/src/openvslam/data/jul29/config2/target/'
+output_folder_path = '/home/jrebello/projects/openvslam/ros/src/openvslam/data/jul29/config2/target/train/'
 encoder_filename = 'encoder_deg.txt'
 target_filename = 'target.yaml'
 camera_names = ['gimbal','static1','static2']
-num_images = 120
-start_idx = 0
+num_images = 45
+start_idx = 1
 
 # make numpy print prettier
 np.set_printoptions(suppress=True)
@@ -122,7 +122,7 @@ class MeasurementGenerator(object):
                     T_t_c = observation.T_t_c()
                     T_c_t = np.linalg.inv(T_t_c.T())
 
-                    output_file_name = str(image_num + start_idx) + "_" + camera_name + str(".txt")
+                    output_file_name = str(image_num + start_idx - 1) + "_" + camera_name + str(".txt")
 
                     # write the gridpoints to file
                     if not os.path.exists(output_folder_path):
