@@ -1,8 +1,10 @@
 function BWR_callback(source, event, handles)
 
-    % This call back is used to rotate the base of the drone so that
-    % cameras pointing in the oppositie direction will be able to see the
-    % target
+%% Descriptions
+% This call back is used to rotate the base of the drone so that
+% cameras pointing in the oppositie direction will be able to see the
+% target
+    
     global input_angles dsc_obj sliders orig_T_WB
     figure(sliders)
     y_pos = source.Position(2)-30;

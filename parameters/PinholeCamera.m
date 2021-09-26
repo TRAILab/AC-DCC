@@ -1,5 +1,9 @@
 classdef PinholeCamera<handle
     
+    %% Description
+    % This file contains all the functions necessary for the pinhole camera
+    % model.
+    
     properties
         sensor_name
         sensor_id
@@ -59,6 +63,8 @@ classdef PinholeCamera<handle
             pixels(:,2) = obj.fy*y_ddash + obj.cy*ones(num_pts,1);
         end 
         
+        % Plot the pixels on the iamge plane and return the handle to the
+        % plot
         function ax = plotPixels(obj, pixels)
             if isempty(findobj('type','figure','name',obj.sensor_name))
                 f = figure('Name',obj.sensor_name);   
@@ -79,6 +85,7 @@ classdef PinholeCamera<handle
             ax = gca;
         end
         
+        % Plot the FOV of the camera.
         function plotFOV(obj, T_WC)
             if isempty(findobj('type','figure','name','Dynamic Camera Cluster'))
                 figure('Name',obj.sensor_name);   
@@ -105,6 +112,9 @@ classdef PinholeCamera<handle
             plot3([fov_pts_wrld(1,1),fov_pts_wrld(4,1)],[fov_pts_wrld(1,2),fov_pts_wrld(4,2)],[fov_pts_wrld(1,3),fov_pts_wrld(4,3)],'b');
         end
         
+        % Get indices that fall on the image but are also within the FOV of
+        % the camera. Sometimes points outside the FOV fall on the image
+        % plane (weird!)
         function pixel_indices = getIndicesOnImage(obj, pixels, camera_points)
             xs = pixels(:,1);
             ys = pixels(:,2);
@@ -113,6 +123,8 @@ classdef PinholeCamera<handle
             pixel_indices = pixel_indices(selected_indices);
         end
         
+        % Get the 3D points expressed in camera frame within the FOV based
+        % on the cosine of the angle with the optical axis.
         function point_indices = getIndicesInFOV(obj, camera_points)
             xfov = abs(rad2deg(atan2(camera_points(:,1),camera_points(:,3))));
             yfov = abs(rad2deg(atan2(camera_points(:,2),camera_points(:,3))));

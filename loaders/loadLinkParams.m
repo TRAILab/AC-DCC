@@ -1,6 +1,7 @@
 function link_struct = loadLinkParams(file_path)
 
-% sets an initial guess and the mappings
+%% Description
+% This file loads the link parameters of the DCC
 
 % gets the initial guess vector
 params_struct = loadDSCParams(file_path);
@@ -72,7 +73,7 @@ for i=1:num_DH_links
 end
 
 static_cam_count = 0;
-for m=num_DH_links+1+1:length(params_struct)
+for m = 1+num_DH_links+1:length(params_struct)
     static_cam_count = static_cam_count + 1;
     if strcmp(params_struct(m).type,'4dof')
         link_struct(end+1).index_map = [-1 -1 -1 -1];

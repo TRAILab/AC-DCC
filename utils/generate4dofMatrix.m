@@ -1,5 +1,6 @@
 function M = generate4dofMatrix(rx,ry,tx,ty)
 
+%% Description
 % This function generates a 4dof matrix used for the base to static camera
 % transform
 % M = [cos(ry) 0 sin(ry) tx*cos(ry);

@@ -1,5 +1,9 @@
 function T_WC_list = displaySimulationObject(sim_obj, encoder_angles, opt_problem)
 
+%% Description:
+% This function displays the simulation object and returns a vector cell of
+% the different camera to world transforms
+
 title_str = 'Dynamic Camera Cluster';
 num_dh_links = sim_obj.num_DH_links;
 
@@ -39,28 +43,28 @@ if isempty(opt_problem)
     opt_problem = setupOptimizationProblem(sim_obj, []);
 end
 
-% Plot the two static cameras
+% Plot the static cameras
 for i=1:length(sim_obj.cameras)-1
     sim_obj.static_cam_key = strcat('T_S',num2str(i),'B');
     [~, transform_chain] = movingToStaticChain(opt_problem.parameter_container, encoder_angles, sim_obj);
-    color_num = color_num+1;
-    T_SB = transform_chain{end}; % <---- this is right because we are only doing 1 at a time by setting static_cam_key
+    color_num = color_num + 1;
+    T_SB = transform_chain{end};
     T_WS = T_WB/T_SB;
     T_WS_list{i} = T_WS;
-    plotAxis(T_WS,0.2, colors(color_num),strcat('s',num2str(i)))
+    plotAxis(T_WS, 0.2, colors(color_num), strcat('s',num2str(i)))
 end
 
-% Plot DH links. Note b/A = b*inv(A)
-w_T_DHlink = T_WB;
+% Set the first as the base to world.
+T_WDHlink = T_WB;
 for t=1:num_dh_links
-    w_T_DHlink = w_T_DHlink*(transform_chain{end-t});
-    color_num = color_num+1;
-    plotAxis((w_T_DHlink), 0.2, colors(color_num),joint_names{t});
+    T_WDHlink = T_WDHlink*(transform_chain{end-t});
+    color_num = color_num + 1;
+    plotAxis((T_WDHlink), 0.2, colors(color_num),joint_names{t});
 end
 
 % Plot Gimbal camera
 color_num = color_num+1;
-T_WG = w_T_DHlink*(transform_chain{1});
+T_WG = T_WDHlink*(transform_chain{1});
 plotAxis(T_WG, 0.3, colors(color_num),'d')
 
 % Get all the transforms from cameras to world

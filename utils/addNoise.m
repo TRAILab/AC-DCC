@@ -1,8 +1,9 @@
 function noisy_vals = addNoise(orig_value, noise_type, noise_vals, theta_flag_vec)
-%function noisy_vals = add_noise(orig_value, noise_type, theta_flag_vec, noise_bounds)
 
-% Add gaussian noise to values of a certain mean and variance, based on the
-% standard deviation.
+%% Description
+% Add gaussian noise to variables based on noise type, if we are dealing
+% with joint angles, we need to know which angles to add noise to specified
+% in the vector theta_flag_vec
 
 if strcmp(noise_type, 'transformation')
     
@@ -21,10 +22,6 @@ else
     % Generate random numbers 
     rng('shuffle');
     noise = normrnd(noise_vals.mean, noise_vals.std_dev, num_vals, num_dim);
-
-    % Get noise for values. 
-    % Rand value in range = (b-a)*point-a.
-    % noise = (noise_bounds(2)-noise_bounds(1)).*rand(num_vals,num_dim)+noise_bounds(1);
 
     if strcmp(noise_type, 'enc')
         noisy_vals = orig_value + noise.*theta_flag_vec;

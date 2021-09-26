@@ -1,6 +1,7 @@
 function setupUI(sim_obj)
 
-% UI to display sliders
+%% Description
+% Setup UI to control the simulation object
 
 global sliders
 
@@ -14,13 +15,14 @@ myhandles = guihandles(sliders);
 myhandles.simulation_object = sim_obj;
 myhandles.angles = zeros(1,combined_DH_links);
 guidata(sliders,myhandles)
-names = ["J0","J1","J2","J3","J4","J5","J6"];
+names = ["(Closest to gimbal camera) J0","J1","J2","J3","J4","J5","J6"];
 ui_control_vec = [];
 
 a = 1:combined_DH_links;
 strt1 = 350;
 strt2 = strt1-30;
 
+% This are the sliders for the individual joint axis
 for i=1:length(a)
     
     if sim_obj.use_modified_DH_flag
@@ -47,6 +49,11 @@ for i=1:length(a)
                     'String',num2str(bounds(2)));
     end
 end
+
+% This is the slider for moving the base in the world frame. This is mainly
+% used when we have non-overlapping static cameras, to move the base so
+% that other static cameras can view the target points. Similar to rotating
+% the drone about the yaw axis.
 
 bounds = [-180 180];
 i=i+1;

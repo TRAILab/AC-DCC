@@ -1,6 +1,7 @@
 function opt_problem = setupOptimizationProblem(dcc_obj, measurement_set)
 
-%% This file sets up the optimization problem
+%% Description:
+% This function sets up the optimization problem for the calibration
 
 % set up the parameter container
 parameter_container = ParameterContainer;
@@ -14,6 +15,7 @@ if strcmp(dcc_obj.link_struct(1).type,'mdh')
     
     assert(length(idx_map)==6, 'idx_map wrong length!');
     
+    % We start with the d parameter and handle the joint angles later
     if(idx_map(2)>0) % d parameter
         d_opt_param = OptimizationParameter(MDHParamD(dvs(2)), 1, 'mdh_d_1');
         parameter_container.addParameter(d_opt_param);

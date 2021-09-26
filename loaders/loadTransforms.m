@@ -1,5 +1,6 @@
 function transforms = loadTransforms(filename)
 
+%% Description
 % This function reads the transforms for the environment setup
 
 fid = fopen(filename);

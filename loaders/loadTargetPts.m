@@ -1,9 +1,8 @@
 function target_pts_CB = loadTargetPts(filepath)
 
-% Chessboard parameters
-% sqSize = 0.10; % chessboard square size in meters
-% width = 9; % number of internal corners in width and height
-% height = 7;
+%% Description:
+% This file loads a checkerboard target based on parameters referenced in
+% the file.
 
 fid = fopen(filepath);
 

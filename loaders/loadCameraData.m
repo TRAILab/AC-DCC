@@ -1,5 +1,6 @@
 function cameras = loadCameraData(all_file_path)
 
+%% Description:
 % This function is used to create the sensor objects
 
 sensor_file_path = all_file_path.sensors_file_path;

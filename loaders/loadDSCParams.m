@@ -1,7 +1,7 @@
 function params_struct = loadDSCParams(filename)
 
-% function that reads the parameter file and returns the true parameters
-% base on whether we want to optimize that variable or not
+%% Description:
+% This file reads the parameter file and returns the DCC parameters
 
 fid = fopen(filename); % get the commented line
 

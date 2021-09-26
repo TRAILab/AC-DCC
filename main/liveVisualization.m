@@ -2,10 +2,11 @@ clear all
 clc
 close all
 
+%% Description
 % This file is used to visualize the simulation by observing the change in
 % the mechanism using angles provided by the sliders.
 
-global input_angles dsc_obj comb_fig orig_T_WB;
+global input_angles dsc_obj orig_T_WB;
 
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
 reprojection_threshold = 1.5;           % Allowed reprojection threshold to decide if a measurement is good or not
@@ -37,6 +38,7 @@ dsc_obj.data_files = data_files;
 dsc_obj.optimize_theta_flag = sum(dsc_obj.optimize_theta_flag_vec)>0;
 dsc_obj.use_random_points = use_random_pts;
 
+% Go through the links and find out the midpoint of the angles
 joint_angle_count = 0;
 for i=1:length(dsc_obj.link_struct)
     if strcmp(dsc_obj.link_struct(i).type,'mdh') || strcmp(dsc_obj.link_struct(i).type,'dh')
@@ -45,5 +47,6 @@ for i=1:length(dsc_obj.link_struct)
     end
 end
 
+% Show the object and pixels on the image plane and setup the UI
 showObjAndPix(dsc_obj, input_angles);
 setupUI(dsc_obj);
