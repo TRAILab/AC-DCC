@@ -16,6 +16,8 @@ classdef PinholeCamera<handle
         k3
         p1
         p2
+        fovx
+        fovy
     end
     
     methods
@@ -35,6 +37,8 @@ classdef PinholeCamera<handle
             obj.k3 = str2double(yaml_map('k3'));
             obj.p1 = str2double(yaml_map('p1'));
             obj.p2 = str2double(yaml_map('p2'));
+            obj.fovx = rad2deg(atan2(obj.width,2*obj.fx)); % Note that this is half of fov
+            obj.fovy = rad2deg(atan2(obj.height,2*obj.fy)); % Note that this is half of fov
         end
         
         function pixels = project(obj, points)
@@ -53,7 +57,7 @@ classdef PinholeCamera<handle
             
             pixels(:,1) = obj.fx*x_ddash + obj.cx*ones(num_pts,1);
             pixels(:,2) = obj.fy*y_ddash + obj.cy*ones(num_pts,1);
-        end
+        end 
         
         function ax = plotPixels(obj, pixels)
             if isempty(findobj('type','figure','name',obj.sensor_name))
@@ -75,10 +79,44 @@ classdef PinholeCamera<handle
             ax = gca;
         end
         
+        function plotFOV(obj, T_WC)
+            if isempty(findobj('type','figure','name','Dynamic Camera Cluster'))
+                figure('Name',obj.sensor_name);   
+            else
+                figure(findobj('type','figure','name','Dynamic Camera Cluster').Number);    
+            end
+            hold on;
+            z_dist = 2;
+            x_dist = z_dist*tan(deg2rad(obj.fovx));
+            y_dist = z_dist*tan(deg2rad(obj.fovy));
+            fov_points = [-x_dist y_dist z_dist; 
+                           x_dist y_dist z_dist;
+                           x_dist -y_dist z_dist;
+                          -x_dist -y_dist z_dist];
+            fov_pts_wrld = applyTransform(T_WC, fov_points);
+            cam_origin_world = applyTransform(T_WC, [0,0,0]);
+            plot3([fov_pts_wrld(1,1),cam_origin_world(1)],[fov_pts_wrld(1,2),cam_origin_world(2)],[fov_pts_wrld(1,3),cam_origin_world(3)],'b');
+            plot3([fov_pts_wrld(2,1),cam_origin_world(1)],[fov_pts_wrld(2,2),cam_origin_world(2)],[fov_pts_wrld(2,3),cam_origin_world(3)],'b');
+            plot3([fov_pts_wrld(3,1),cam_origin_world(1)],[fov_pts_wrld(3,2),cam_origin_world(2)],[fov_pts_wrld(3,3),cam_origin_world(3)],'b');
+            plot3([fov_pts_wrld(4,1),cam_origin_world(1)],[fov_pts_wrld(4,2),cam_origin_world(2)],[fov_pts_wrld(4,3),cam_origin_world(3)],'b');
+            plot3([fov_pts_wrld(1,1),fov_pts_wrld(2,1)],[fov_pts_wrld(1,2),fov_pts_wrld(2,2)],[fov_pts_wrld(1,3),fov_pts_wrld(2,3)],'b');
+            plot3([fov_pts_wrld(2,1),fov_pts_wrld(3,1)],[fov_pts_wrld(2,2),fov_pts_wrld(3,2)],[fov_pts_wrld(2,3),fov_pts_wrld(3,3)],'b');
+            plot3([fov_pts_wrld(3,1),fov_pts_wrld(4,1)],[fov_pts_wrld(3,2),fov_pts_wrld(4,2)],[fov_pts_wrld(3,3),fov_pts_wrld(4,3)],'b');
+            plot3([fov_pts_wrld(1,1),fov_pts_wrld(4,1)],[fov_pts_wrld(1,2),fov_pts_wrld(4,2)],[fov_pts_wrld(1,3),fov_pts_wrld(4,3)],'b');
+        end
+        
         function pixel_indices = getIndicesOnImage(obj, pixels, camera_points)
             xs = pixels(:,1);
             ys = pixels(:,2);
             pixel_indices = find(xs>0 & xs<obj.width & ys>0 & ys<obj.height & camera_points(:,3)>0);
+            selected_indices = obj.getIndicesInFOV(camera_points(pixel_indices,:));
+            pixel_indices = pixel_indices(selected_indices);
+        end
+        
+        function point_indices = getIndicesInFOV(obj, camera_points)
+            xfov = abs(rad2deg(atan2(camera_points(:,1),camera_points(:,3))));
+            yfov = abs(rad2deg(atan2(camera_points(:,2),camera_points(:,3))));
+            point_indices = find(xfov<obj.fovx & yfov<obj.fovy);
         end
         
         function J = projectionJacobian(obj, point)

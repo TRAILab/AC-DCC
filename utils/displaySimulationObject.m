@@ -30,9 +30,9 @@ plotAxis(T_WB, 0.2, colors(color_num),'b')
 
 % Plot target
 %target_pts_in_world = applyTransform(sim_obj.transforms.world_T_target, sim_obj.target_pts);
-%target_pts_in_world = sim_obj.target_pts_world;
-%hold on;
-%scatter3(target_pts_in_world(:, 1), target_pts_in_world(:, 2), target_pts_in_world(:, 3), 'filled', 'k');
+target_pts_in_world = sim_obj.target_pts_world;
+hold on;
+scatter3(target_pts_in_world(:, 1), target_pts_in_world(:, 2), target_pts_in_world(:, 3), 'filled', 'k');
 
 % Setup the optimization problem
 if isempty(opt_problem)

@@ -14,7 +14,7 @@ dsc_obj.target_pts_world = applyTransform(dsc_obj.transforms.world_T_target, dsc
 % Decide if we want to use random points all around the camera instead of
 % a target
 if(data_files.use_random_pts)
-    target_pts = load(strcat(data_files.folder_path,'target_pts.mat'));
+    target_pts = load(strcat(data_files.folder_path, data_files.target_pts_filename));
     dsc_obj.target_pts = target_pts.target_pts;
     dsc_obj.transforms.world_T_target = eye(4);
     dsc_obj.target_pts_world = applyTransform(dsc_obj.transforms.world_T_target, dsc_obj.target_pts);

@@ -11,18 +11,20 @@ global input_angles dsc_obj comb_fig orig_T_WB;
 reprojection_threshold = 1.5;           % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
 pixel_noise.mean = 0;                   % Pixel noise mean
-pixel_noise.std_dev = 0.2;              % Pixel noise std dev
+pixel_noise.std_dev = 0.0;              % Pixel noise std dev
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
-encoder_noise.std_dev = 0;             % How much noise to add to the encoder values (deg)
-use_random_pts = 0;                     % Use random points in the environment (1) or a target (0)
+encoder_noise.std_dev = 0;              % How much noise to add to the encoder values (deg)
+use_random_pts = 1;                     % Use random points in the environment (1) or a target (0)
+target_pts_filename = 'cube.mat';         % This is the file that stores the target points
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/landing/';
+data_files.folder_path = 'data/test1/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
-data_files.calibration_params_file_path = strcat(data_files.folder_path,'calibratedParams.txt');
+data_files.calibration_params_file_path = strcat(data_files.folder_path,'trueParams.txt');
 data_files.use_random_pts = use_random_pts;
+data_files.target_pts_filename = target_pts_filename;
 
 % Initialize simulation object
 dsc_obj = initDCC(data_files);

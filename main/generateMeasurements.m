@@ -15,11 +15,11 @@ axis_len = 0.4;                         % Length of the axis (for display purpos
 pixel_noise.mean = 0;                   % Pixel noise mean
 pixel_noise.std_dev = 0.2;              % Pixel noise std dev
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
-encoder_noise.std_dev = 5;             % How much noise to add to the encoder values (deg)
+encoder_noise.std_dev = 0;             % How much noise to add to the encoder values (deg)
 transformation_noise.trans.mean = 0;    % Transformation noise, translation
-transformation_noise.trans.std_dev = 0.02;  
+transformation_noise.trans.std_dev = 0.0;  
 transformation_noise.rot.mean = 0;      % Transformation noise, rotation
-transformation_noise.rot.std_dev = 5; 
+transformation_noise.rot.std_dev = 0; 
 use_random_pts = 0;                     % Use random points in the environment (1) or a target (0)
 angle_type = 'random';                  % Type of angles we want, (linear, random)
 num_random_angles = 30;                  % Number of random angles if random angle type
@@ -31,7 +31,7 @@ num_linear_angles_per_joint = [3;3;4];  % Number of angles per joint to collect 
 move_base = 0;                          % Decide if you want to move the drone
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/ijrr/reproj_poseloop_test/simulated/';
+data_files.folder_path = 'data/test1/';
 data_files.measurement_type = 'test/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
