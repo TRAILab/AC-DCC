@@ -1,6 +1,9 @@
 classdef Problem<handle
-    %PROBLEM Summary of this class goes here
-    %   Detailed explanation goes here
+    
+    %% Description
+    % This file holds the entire optimization problem along with the
+    % necessary information and variables needed to perform the
+    % optimization
     
     properties
         % Full parameter container
@@ -94,7 +97,7 @@ classdef Problem<handle
                 H_sparse = sparse(H);
                 L = chol(H_sparse,'lower');
                 update_delta = (L'\(L\obj.g));
-                obj.updateParameters(0.05*update_delta);
+                obj.updateParameters(0.1*update_delta);
                 success = false;
                 
             elseif strcmp(obj.opt_params.opt_type, 'LM1')
@@ -145,8 +148,8 @@ classdef Problem<handle
                             success = 1;
                             return;
                         end
-                        obj.lambda
-                        max(1/3, 1-(2*ro-1)^3)
+                        %obj.lambda
+                        %max(1/3, 1-(2*ro-1)^3)
                         obj.lambda = obj.lambda * max(1/3, 1-(2*ro-1)^3);
                         obj.nu = 2;
                         A = A + obj.lambda*eye(size(A));
@@ -209,7 +212,7 @@ classdef Problem<handle
                     
                     % Solve the system
                     A = A + obj.lambda*eye(size(A));
-                    h_lm = getUpdateDelta(A, -obj.g, 1);
+                    h_lm = obj.getUpdateDelta(A, -obj.g, 1);
                     update_delta = h_lm;
                     
                     % Check for success based on update vector
@@ -266,7 +269,7 @@ classdef Problem<handle
                     end
                     
                     A = A + obj.lambda*eye(size(A));
-                    h_lm = getUpdateDelta(A, -obj.g, 1);
+                    h_lm = obj.getUpdateDelta(A, -obj.g, 1);
                     update_delta = h_lm;
                     obj.L0 = 0.5*h_lm'*(obj.lambda*h_lm - obj.g);
                     if norm(h_lm) <= obj.eps2*(norm(obj.getState()) + obj.eps2)
@@ -284,7 +287,7 @@ classdef Problem<handle
             %update_delta = linsolve(H, obj.g, opts);
         end
         
-        function update_delta = getUpdateDelta(A, b, option_flag)
+        function update_delta = getUpdateDelta(obj, A, b, option_flag)
             if option_flag == 1
                 A_sparse = sparse(A);
                 L = chol(A_sparse,'lower');

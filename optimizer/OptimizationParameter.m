@@ -1,6 +1,8 @@
 classdef OptimizationParameter<handle
-    %TRASNFORMATIONPARAMETER Summary of this class goes here
-    %   Detailed explanation goes here
+    
+    %% Description
+    % This file holds all the information for getting the values of a
+    % particular parameter class
     
     properties
         % Parameter object (needs to have manifoldPlus implemented)
@@ -11,9 +13,10 @@ classdef OptimizationParameter<handle
     end
     
     methods
-        function obj = OptimizationParameter(parameter,tangentspace_dim,key)
+        
+        % Create a parameter for optimization
+        function obj = OptimizationParameter(parameter, tangentspace_dim, key)
             if nargin>2
-                
                 obj.key = key;
             else
                 obj.key = 'empty';
@@ -22,6 +25,7 @@ classdef OptimizationParameter<handle
             obj.tangentspace_dim = tangentspace_dim;
         end
         
+        % Set the column index based on the parameter
         function [] = setColumnIndex(obj,idx)
             obj.column_idx = idx;
         end

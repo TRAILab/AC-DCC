@@ -1,6 +1,7 @@
 function [T_CW_data, L2error] = solvePnPBA(target_pts_3D, pixels, camera_object, T_CW_init)
 
-% Function returns the transformation from target frame to camera frame.
+%% Description
+% Function returns the transformation from target frame or world frame to camera frame.
 % This version uses bundle adjustment, not homography, so it can work
 % without the planar assumption.
 
@@ -8,7 +9,7 @@ function [T_CW_data, L2error] = solvePnPBA(target_pts_3D, pixels, camera_object,
 T_CW_opt = Transformation(T_CW_init);
 
 % only going to optimize over one parameter
-O1 = OptimizationParameter(T_CW_opt,6);
+O1 = OptimizationParameter(T_CW_opt, 6);
 
 % set up the parameter container
 parameter_container = ParameterContainer;
@@ -21,7 +22,7 @@ opt_problem = Problem(parameter_container);
 opt_params.gradient_norm_threshold = 1e-6;
 opt_params.step_norm_threshold = 1e-10;
 opt_params.max_iterations = 500;
-opt_params.opt_type = 'GN';
+opt_params.opt_type = 'LM2';
 opt_problem.opt_params = opt_params;
 num_points = length(target_pts_3D);
 
@@ -34,13 +35,13 @@ for i=1:opt_params.max_iterations
     end
     
     % solve the linear system.
-    update_delta = opt_problem.solveLinearSystem();
-    opt_problem.updateParameters(0.25*update_delta);
+    [update_delta, success] = opt_problem.solveLinearSystem();
+    
     S = sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
     %disp(S);
     
     % check stopping criteria.
-    if( (norm(opt_problem.g)<=opt_params.gradient_norm_threshold) ||(norm(update_delta)<=opt_params.step_norm_threshold))
+    if( (norm(opt_problem.g)<=opt_params.gradient_norm_threshold) ||(norm(update_delta)<=opt_params.step_norm_threshold) || success)
         disp('Reached first order optimality threshold');
         S=sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
         disp(S);

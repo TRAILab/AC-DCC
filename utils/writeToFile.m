@@ -1,6 +1,8 @@
 function writeToFile(measurement_num, camera_name, folder_path, target_pts_pix, camera_T_target_struct, raw_encoder_angles)
 
-% Function to write a measurement
+%% Description
+% This function writes the different values to a text file for the
+% calibration
 
 if ~exist(folder_path, 'dir')
     mkdir(folder_path);

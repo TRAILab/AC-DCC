@@ -1,7 +1,11 @@
 function sim_obj = writeMeasurementsToFile(sim_obj, input_angles)
 
+%% Description:
+% This function is used to generate simulated measurements for calibration
+% and writes it to a file
+
 % Store Variables
-world_T_target = sim_obj.transforms.world_T_target;
+T_WT = sim_obj.transforms.world_T_target;
 target_pts = sim_obj.target_pts;
 folder_path = strcat(sim_obj.data_files.folder_path, sim_obj.data_files.measurement_type);
 encoder_angles_rad = input_angles;
@@ -24,13 +28,13 @@ for meas_num=1:size(encoder_angles_rad,1)
     noisy_encoder_angles_rad = addNoise(encoder_angles_rad(meas_num,:), 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
     
     % Randomly move the base
-%     if simulation_object.move_base
-%         disp('Moving base');
-%         rand_trans = get_3d_pts_in_range(-0.05, 0.05, 3);
-%         rand_rot = deg2rad(get_3d_pts_in_range(-5, 5, 3));
-%         oldbase_T_newbase = Transformation([rand_rot rand_trans]).matrix;
-%         simulation_object.transforms.w_T_base = simulation_object.transforms.w_T_base*oldbase_T_newbase;
-%     end
+    if sim_obj.move_base
+        disp('Moving base');
+        rand_trans = getValuesInRange(-0.05, 0.05, [1 3]);
+        rand_rot = deg2rad(getValuesInRange(-5, 5, [1 3]));
+        T_oldbase_newbase = Transformation([rand_rot rand_trans]).matrix;
+        sim_obj.transforms.w_T_base = sim_obj.transforms.w_T_base*T_oldbase_newbase;
+    end
     
     % Display the object. Returns transforms for use at other places
     T_WC_list = displaySimulationObject(sim_obj, noisy_encoder_angles_rad, opt_problem);
@@ -39,10 +43,10 @@ for meas_num=1:size(encoder_angles_rad,1)
     for c=1:length(sim_obj.cameras)
         
         % Get the transformation from camera to world
-        w_T_cam = T_WC_list{c};
+        T_WC = T_WC_list{c};
         
-        % Get target pts in static frame. INV(A)*b = A\b
-        target_pts_in_cam_frame = applyTransform(w_T_cam\world_T_target, target_pts);
+        % Transform points from target to camera via world
+        target_pts_in_cam_frame = applyTransform(T_WC\T_WT, target_pts);
 
         % Project camera points on image plane
         all_cam_pixels = sim_obj.cameras{c}.project(target_pts_in_cam_frame);
@@ -54,14 +58,14 @@ for meas_num=1:size(encoder_angles_rad,1)
         cam_indices_on_plane = sim_obj.cameras{c}.getIndicesOnImage(all_noisy_cam_pixels, target_pts_in_cam_frame);
 
         % Get noisy pixels on the image plane
-        noisy_cam_pix_on_plane = all_noisy_cam_pixels(cam_indices_on_plane,:);
+        noisy_cam_pix_on_plane = all_noisy_cam_pixels(cam_indices_on_plane, :);
 
-        % Get the Target points for which the pixels are on the plane
-        target_pts_seen_in_cam = target_pts(cam_indices_on_plane,:);
+        % Get the Target points in the target frame, for which the pixels are on the plane
+        target_pts_seen_in_cam = target_pts(cam_indices_on_plane, :);
         
         if size(target_pts_seen_in_cam, 1)>4
             disp(strcat("Solving PnP for Cam: ", sim_obj.cameras{c}.sensor_name));
-            cam_T_target_orig = w_T_cam\world_T_target;
+            cam_T_target_orig = T_WC\T_WT;
             noisy_cam_T_target = addNoise(cam_T_target_orig, 'transformation', sim_obj.transformation_noise, []);
             [T_CW, L2_error] = solvePnPBA(target_pts_seen_in_cam, noisy_cam_pix_on_plane, sim_obj.cameras{c}, noisy_cam_T_target);
         else

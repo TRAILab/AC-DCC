@@ -1,11 +1,12 @@
-function output_pts = applyTransform(T, input_pts)
+function output_pts_B = applyTransform(T_BA, input_pts_A)
 
-% Returns non-homogeneous points after transforming with T 
+%% Description
+% Transform point from A to B
 
-if size(input_pts,2)==3
-    input_pts = [input_pts ones(size(input_pts,1),1)];
+if size(input_pts_A,2)==3
+    input_pts_A = [input_pts_A ones(size(input_pts_A,1),1)];
 end
 
-output_pts = T*input_pts';
+output_pts_B = T_BA*input_pts_A';
 
-output_pts = output_pts(1:3,:)';
+output_pts_B = output_pts_B(1:3,:)';

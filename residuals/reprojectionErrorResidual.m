@@ -1,8 +1,9 @@
-function [r, J_Total ] = reprojectionErrorResidual( camera, T_c_a, a_p, c_pix )
+function [r, J_Total] = reprojectionErrorResidual(camera, T_c_a, a_p, c_pix)
 
-% residual of the form
-%c_pix = project(T_a_b * a_p);
-%c_pix = reshape(c_pix,2,1);
+%% Description
+% This file determines the jacobian and residual for the re-projection
+% error
+
 [c_p_predicted, J__T_c_b,~] = T_c_a.transformAndJacobian(a_p);
 
 % perform projection
@@ -18,4 +19,4 @@ else
     r = [];
     J_Total=[];
 end
-end
+
