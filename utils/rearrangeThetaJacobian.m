@@ -1,5 +1,8 @@
 function J_rearranged = rearrangeThetaJacobian(dcc_obj, J_input, measurement_set)
 
+%% Description
+% This rearranges the theta jacobians to get it into the correct format
+
 num_thetas_to_optimize = sum(dcc_obj.optimize_theta_flag_vec);
 num_measurement_sets = length(measurement_set);
 J_diag_thetas = zeros(size(J_input,1), num_thetas_to_optimize*num_measurement_sets);

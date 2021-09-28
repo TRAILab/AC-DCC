@@ -1,5 +1,10 @@
 function [T_CW, T_CW_cov, target_points, pixels, gimbal_angles] = loadSingleMeasurement(filename)
-fid = fopen( filename );
+
+%% Description
+% This function reads a single measurement from the text file so that it
+% can be read
+
+fid = fopen(filename);
 
 target_points = []; % 3D target points in target frame
 T_CW = []; % Transformation from Target to camera

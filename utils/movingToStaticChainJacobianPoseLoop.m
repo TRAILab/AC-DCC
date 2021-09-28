@@ -1,5 +1,9 @@
 function [J_total_chain, J_theta_MI] = movingToStaticChainJacobianPoseLoop(parameter_container, joint_angles, dcc_obj, transform_chain)
 
+%% Description
+% This file returns the jacobian with respect to the static parameters and
+% joint angles.
+
 % generate the transform chain manager.
 chain_helper = generateChainHelper(transform_chain);
 
@@ -39,23 +43,23 @@ for i=1:chain_length
             [link_d, link_a, link_alpha, link_beta, link_y] = deal(dv(2), dv(3), dv(4), dv(5), dv(6));
             jacobian_cols = [0 0 0 0 0];
             
-            if(link_opt.index_map(2)>0) %d
+            if(link_opt.index_map(2)>0) % d
                 link_d = parameter_container.getKeyValue(strcat('mdh_d_', num2str(i)));
                 jacobian_cols(1) = 1;
             end
-            if(link_opt.index_map(3)>0)%a
+            if(link_opt.index_map(3)>0) % a
                 link_a = parameter_container.getKeyValue(strcat('mdh_r_', num2str(i)));
                 jacobian_cols(2) = 1;
             end
-            if(link_opt.index_map(4)>0) %alpha
+            if(link_opt.index_map(4)>0) % alpha
                 link_alpha = parameter_container.getKeyValue(strcat('mdh_alpha_', num2str(i)));
                 jacobian_cols(3) = 1;
             end
-            if(link_opt.index_map(5)>0)%a
+            if(link_opt.index_map(5)>0) % beta
                 link_beta = parameter_container.getKeyValue(strcat('mdh_beta_', num2str(i)));
                 jacobian_cols(4) = 1;
             end
-            if(link_opt.index_map(6)>0) %alpha
+            if(link_opt.index_map(6)>0) % y
                 link_y = parameter_container.getKeyValue(strcat('mdh_y_', num2str(i)));
                 jacobian_cols(5) = 1;
             end
@@ -173,15 +177,15 @@ for i=1:chain_length
         [link_d, link_a, link_alpha] = deal(dv(2), dv(3), dv(4));
         jacobian_cols = [0 0 0];
         
-        if(link_opt.index_map(2)>0) %d
+        if(link_opt.index_map(2)>0) % d
             link_d = parameter_container.getKeyValue(strcat('dh_d_', num2str(i-1)));
             jacobian_cols(1) = 1;
         end
-        if(link_opt.index_map(3)>0)%a
+        if(link_opt.index_map(3)>0) % a
             link_a = parameter_container.getKeyValue(strcat('dh_r_', num2str(i-1)));
             jacobian_cols(2) = 1;
         end
-        if(link_opt.index_map(4)>0) %alpha
+        if(link_opt.index_map(4)>0) % alpha
             link_alpha = parameter_container.getKeyValue(strcat('dh_alpha_', num2str(i-1)));
             jacobian_cols(3) = 1;
         end

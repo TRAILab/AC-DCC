@@ -1,5 +1,9 @@
 function J_rearranged = rearrangeNonThetaJacobian(dcc_obj, J_input)
 
+%% Description
+% This file rearranges the static parameters. Mainly the base to static
+% camera jacobians.
+
 list_num_opt_params = [];
 num_dh_links = dcc_obj.num_DH_links;
 static_cam_idx = str2double(dcc_obj.static_cam_key(4));

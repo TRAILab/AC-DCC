@@ -1,6 +1,7 @@
 classdef Transformation<handle
-    %TRANSFORMATIONPARAMETER Summary of this class goes here
-    %   Detailed explanation goes here
+    
+    %% Description
+    % This file is the transformation parameter class
     
     properties
         % Internal storage

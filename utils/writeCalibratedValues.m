@@ -1,10 +1,13 @@
 function writeCalibratedValues(dcc_obj, opt_problem)
 
+%% Description
+% This function writes the calibration values to the file 
+
 format short;
 
 zero_limit = 1e-5;
 
-calibrated_file_id = fopen(strcat(dcc_obj.data_files.folder_path,'calibratedParams2.txt'),'w');
+calibrated_file_id = fopen(strcat(dcc_obj.data_files.folder_path,'calibratedParams.txt'),'w');
 parameter_container = opt_problem.parameter_container;
 link_structs = dcc_obj.link_struct;
 

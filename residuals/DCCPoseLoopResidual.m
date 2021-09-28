@@ -1,5 +1,8 @@
 function [white_residual, white_J_total, calib_error] = DCCPoseLoopResidual(parameter_container, measurement_set, dcc_obj)
 
+%% Description
+% This file returns the poseloop residual and jacobian.
+
 optimize_theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
 joint_angles = measurement_set.theta_vec;
 for i=1:length(joint_angles)

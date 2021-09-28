@@ -106,4 +106,5 @@ for c=1:length(sim_obj.cameras)
     temp_cam_name = string(sim_obj.cameras{c}.sensor_name);
     temp_cam_name = join(split(temp_cam_name,'_'));
     title([strcat('Avg pix error for each measurement set for:- ',temp_cam_name),strcat(' is mean: ', num2str(mean(all_measurement_pixel_error_mean(:,c))), ' and std: ', num2str(std(all_measurement_pixel_error_mean(:,c))))]);
+    plot(0:length(all_measurement_pixel_error_mean)+1,mean(all_measurement_pixel_error_mean(:,c))*ones(1,length(all_measurement_pixel_error_mean)+2),'r');
 end

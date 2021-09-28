@@ -1,5 +1,8 @@
 function [measurement_set, dcc_obj] = loadMeasurements(dcc_obj)
 
+%% Description
+% This function loads the text files (measurements) for calibration
+
 num_measurements = dcc_obj.num_measurements;
 
 min_pix_error_vec = zeros(num_measurements, length(dcc_obj.cameras));
@@ -47,6 +50,9 @@ for meas_num = 1:num_measurements
         
         if c==1
             re = avg_pix_error_vec(meas_num, c);
+            % Reject the entire measurement if we dont have a good gimbal
+            % camera measurement. (TODO: THis should not eliminate the
+            % entire measurement but only the gimbal)
             if isempty(current_meas.T_CW{c}) || re > reprojection_threshold
                 disp(strcat("Ignoring the measurement set ", num2str(meas_num), " ,RE: ", num2str(re)));
                 disp("********************************");
@@ -59,6 +65,7 @@ for meas_num = 1:num_measurements
                 break;
             end
         else
+            % If we dont have the static camera measurement reject.
             if ~isempty(single_measurement_set(c).T_CW)
                 current_meas.T_SM{c-1} = single_measurement_set(c).T_CW/single_measurement_set(1).T_CW; % T_SW*T_WM;
                 gimbal_target_points = single_measurement_set(1).target_points;
@@ -100,6 +107,7 @@ for i=1:length(dcc_obj.cameras)
     scatter(1:size(avg_pix_error_vec,1), min_pix_error_vec(:,i), 'filled', 'k');
 end
 
+% Plot the encoder angles
 callFigure('Encoder Measurements');
 dcc_obj.encoder_collection = rad2deg(dcc_obj.encoder_collection);
 scatter3(dcc_obj.encoder_collection(:,1), dcc_obj.encoder_collection(:,2), dcc_obj.encoder_collection(:,3), 'r', 'filled');

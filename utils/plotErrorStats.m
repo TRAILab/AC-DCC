@@ -1,5 +1,8 @@
 function plotErrorStats(dcc_obj, avg_error)
 
+%% Description
+% This plots the error statistics
+
 avg_pixel_error = avg_error.avg_pixel_error;
 avg_rot_error = avg_error.avg_rot_error;
 avg_trans_error = avg_error.avg_trans_error;

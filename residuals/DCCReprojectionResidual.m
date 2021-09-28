@@ -1,5 +1,8 @@
 function [residual, J_total, calib_error] = DCCReprojectionResidual(parameter_container, measurement_set, dcc_obj)
 
+%% Description
+% This file returns the reprojection residual and jacobian.
+
 optimize_theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
 joint_angles = measurement_set.theta_vec;
 for i=1:length(joint_angles)

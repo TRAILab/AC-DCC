@@ -1,7 +1,8 @@
 function single_measurement_set = loadDataGroup(seq_num, camera_group, data_files)
 
-% Loads a data file and computes pixel error between coresponding points
-% seen in both images. Also stores corresponding 3D points and pixel locations.
+%% Description
+% Loads a data file a single data group and stores the poses, pixels, 3D
+% points for all the cameras belonging to one measurement set
 
 num_cameras = length(camera_group);
 
@@ -10,6 +11,7 @@ for i=1:num_cameras
     camera_name = camera_group{i}.sensor_name; 
     file_string = strcat(data_files.folder_path, data_files.measurement_type, num2str(seq_num),'_',camera_name,'.txt');
     
+    % Read the measruement if the file exists
     if isfile(file_string)
         [T_CW, T_CW_cov, target_points, pixels, gimbal_angles] = loadSingleMeasurement(file_string);
 
@@ -37,6 +39,7 @@ for i=1:num_cameras
     single_measurement_set(i).L2error.max = -1;
     single_measurement_set(i).L2error.min = -1;
     
+    % Calculate the L2 error for reporting later
     if ~isempty(target_points) && ~isempty(pixels)
         target_pts_in_camera = applyTransform(T_CW, target_points);
         projected_pixels = camera_group{i}.project(target_pts_in_camera);

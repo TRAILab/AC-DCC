@@ -1,5 +1,8 @@
 function [dcc_obj, opt_problem] = calibrateMechanism(dcc_obj, opt_problem, measurement_set)
 
+%% Description
+% This file performs the calibration of the DCC
+
 % Optimize to get calibration parameters
 opt_problem.clearLinearSystem();
 gradient_norm_threshold = opt_problem.opt_params.gradient_norm_threshold;

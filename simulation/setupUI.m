@@ -15,7 +15,7 @@ myhandles = guihandles(sliders);
 myhandles.simulation_object = sim_obj;
 myhandles.angles = zeros(1,combined_DH_links);
 guidata(sliders,myhandles)
-names = ["(Closest to gimbal camera) J0","J1","J2","J3","J4","J5","J6"];
+names = ["J0","J1","J2","J3","J4","J5","J6"];
 ui_control_vec = [];
 
 a = 1:combined_DH_links;

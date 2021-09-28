@@ -28,10 +28,10 @@ for i=1:length(true_link_structs)
     true_dvs = true_link_structs(i).default_values;
     calibrated_dvs = calibrated_link_structs(i).default_values;
     if strcmp(true_link_structs(i).type,'6dof')
-        true_tr = vec2tran2(true_dvs');
-        calibrated_tr = vec2tran2(calibrated_dvs');
+        true_tr = vec2tran2([deg2rad(true_dvs(1:3)) true_dvs(4:6)]');
+        calibrated_tr = vec2tran2([deg2rad(calibrated_dvs(1:3)) calibrated_dvs(4:6)]');
         diff_tr = true_tr\calibrated_tr;
-        diff_dvs = tran2vec2(diff_tr)';
+        
     else
         diff_dvs = abs(true_dvs-calibrated_dvs);
     end
