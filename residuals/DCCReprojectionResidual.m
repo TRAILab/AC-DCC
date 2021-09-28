@@ -1,4 +1,4 @@
-function [residual, J_total, calib_error] = DCCReprojectionResidual(parameter_container, measurement_set, dcc_obj)
+function [white_residual, white_J_total, calib_error] = DCCReprojectionResidual(parameter_container, measurement_set, dcc_obj)
 
 %% Description
 % This file returns the reprojection residual and jacobian.
@@ -40,5 +40,11 @@ for p=1:size(common_target_points, 1)
 end
 residual = measurement_set.common_pixels{static_cam_num}-proj_pix_list;
 residual = reshape(residual',size(residual,1)*size(residual,2),1);
+
+total_cov = dcc_obj.pixel_noise.std_dev^2*eye(size(J_total,1));
+total_info = inv(total_cov);
+L = chol(total_info, 'lower');
+white_J_total = L'*J_total;
+white_residual = L'*residual;
 
 calib_error.pixel_error = getL2Error(measurement_set.common_pixels{static_cam_num}, proj_pix_list);

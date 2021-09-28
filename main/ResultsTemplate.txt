@@ -1,0 +1,60 @@
+This is a summary of the results for the test
+
+============================= Inputs ======================================
+Type of Environment Used: 
+
+Total Number of Static Cameras Used: 
+
+Total Number of Train Measurements: 
+
+Total Number of Test Measurements: 
+
+Joint Angle Limits for Measurements:
+
+Pixel Noise:
+Mean: 
+Std: 
+
+Encoder Noise:
+Mean: 
+Std: 
+
+Transformation Noise:
+Rot Mean (deg): 
+Rot Std: 
+Trans Mean (m): 
+Trans Std: 
+
+============================ Train ========================================
+Parameter Initialization Error:
+Rot Mean (deg): 
+Rot Std: 
+Trans Mean (m):
+Trans Std: 
+
+Train Set Measurement Reprojection Error:
+Gimbal Mean: 
+Gimbal Std: 
+Static Mean: 
+Static Std: 
+
+Optimized Train Pixel Error:
+Static Mean: 
+Static Std: 
+
+Optimized Variable Error:
+Rot Mean (deg):
+Rot Std:
+Trans Mean (m):
+Trans Std:
+
+=============================== Test ======================================
+Test Set Measurement Reprojection Error:
+Gimbal Mean: 
+Gimbal Std: 
+Static Mean: 
+Static Std: 
+
+Optimized Test Pixel Error:
+Static Mean: 
+Static Std: 

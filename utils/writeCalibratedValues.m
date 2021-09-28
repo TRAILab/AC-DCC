@@ -7,7 +7,7 @@ format short;
 
 zero_limit = 1e-5;
 
-calibrated_file_id = fopen(strcat(dcc_obj.data_files.folder_path,'calibratedParams.txt'),'w');
+calibrated_file_id = fopen(dcc_obj.data_files.optimized_params_file_path,'w');
 parameter_container = opt_problem.parameter_container;
 link_structs = dcc_obj.link_struct;
 
@@ -23,9 +23,13 @@ for i=1:length(parameter_container.parameter_list)
     end
 end
 opt_theta_values = rad2deg(opt_theta_values);
-theta_errors = opt_theta_values - dcc_obj.encoder_collection;
-theta_offsets_calc = mean(theta_errors);
-theta_offsets_calc(abs(theta_offsets_calc)<zero_limit)=0;
+if size(opt_theta_values) == size(dcc_obj.encoder_collection)
+    theta_errors = opt_theta_values - dcc_obj.encoder_collection;
+    theta_offsets_calc = mean(theta_errors);
+    theta_offsets_calc(abs(theta_offsets_calc)<zero_limit)=0;
+else
+    theta_offsets_calc = zeros(1,dcc_obj.num_DH_links + dcc_obj.use_modified_DH_flag);
+end
 
 name_list = containers.Map;
 angle_params = containers.Map;

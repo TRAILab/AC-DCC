@@ -1,4 +1,4 @@
-function calcParamDiff(data_files)
+function calcParamDiff(filepath1, filepath2)
 
 %% Description
 % This file calculates the difference in rotation and translation
@@ -15,10 +15,10 @@ trans_params('4dof') = [3,4];
 angle_params('6dof') = [1,2,3];
 trans_params('6dof') = [4,5,6];
 
-true_params_path = strcat(data_files.true_params_file_path);
+true_params_path = strcat(filepath1);
 true_link_structs = loadLinkParams(true_params_path);
 
-calibrated_params_path = strcat(data_files.folder_path,'calibratedParams.txt');
+calibrated_params_path = strcat(filepath2);
 calibrated_link_structs = loadLinkParams(calibrated_params_path);
 
 angle_diffs = [];
