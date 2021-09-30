@@ -1,0 +1,71 @@
+This is a summary of the results for the test
+
+============================= Inputs ======================================
+Type of Environment Used: Target
+
+Total Number of Static Cameras Used: 2
+
+Total Number of Train Measurements: 36
+
+Total Number of Test Measurements: 30
+
+Joint Angle Limits for Measurements:
+[-120 30
+-20 20
+-150 180]
+
+Pixel Noise:
+Mean: 0
+Std: 1
+
+Encoder Noise:
+Mean (deg): 0
+Std: 10
+
+Transformation Noise:
+Rot Mean (deg): 0
+Rot Std: 10
+Trans Mean (m): 0
+Trans Std: 0.07
+
+Parameter Initialization Error:
+Rot Mean (deg): 8.0749
+Rot Std: 4.3686
+Trans Mean (m): 0.053965
+Trans Std: 0.014625
+
+============================ Train ========================================
+Train Set Measurement Reprojection Error:
+Gimbal Mean: 1.2264
+Gimbal Std: 0.07786
+Static1 Mean: 1.2515
+Static1 Std: 0.048137
+Static2 Mean: 1.2459
+Static2 Std: 0.05337
+
+Optimized Train Pixel Error:
+Static1 Mean: 1.7015
+Static1 Std: 0.49484
+Static2 Mean: 1.5099
+Static2 Std: 0.33272
+
+Optimized Variable Error:
+Rot Mean (deg): 0.71123
+Rot Std: 0.56146
+Trans Mean (m): 0.002395
+Trans Std: 0.0021085
+
+=============================== Test ======================================
+Test Set Measurement Reprojection Error:
+Gimbal Mean: 1.1798
+Gimbal Std: 0.08352
+Static1 Mean: 1.2376
+Static1 Std: 0.060264
+Static2 Mean: 1.2307
+Static2 Std: 0.046392
+
+Optimized Test Pixel Error:
+Static1 Mean: 1.5388
+Static1 Std: 0.37575
+Static2 Mean: 1.4223
+Static2 Std: 0.25887

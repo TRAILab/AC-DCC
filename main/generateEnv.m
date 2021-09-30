@@ -6,10 +6,15 @@ close all
 
 % Cube
 hs = 2; % half side size
-sep = 0.2;
+sep = 0.25;
 pts_range = -hs:sep:hs;
 pts_range = pts_range';
 const_val = hs*ones(length(pts_range),1);
+
+bottom_back_left = [-hs -hs -hs];
+bottom_back_right = [-hs -hs hs];
+bottom_front_left = [-hs hs -hs];
+bottom_front_right = [-hs hs hs];
 
 target_pts = [];
 
@@ -35,5 +40,14 @@ for x=-hs:sep:hs
 end
 
 target_pts = unique(target_pts,'rows');
+noise = getValuesInRange(-0.20,0.20,size(target_pts));
+target_pts = target_pts + noise;
 
 scatter3(target_pts(:,1),target_pts(:,2), target_pts(:,3),'filled','k');
+hold on;
+temp = [bottom_back_left; bottom_back_right];
+plot3(temp(:,1),temp(:,2),temp(:,3),'r','linewidth',3);
+temp = [bottom_back_left; bottom_front_left];
+plot3(temp(:,1),temp(:,2),temp(:,3),'r','linewidth',3);
+temp = [bottom_back_left; bottom_front_right];
+plot3(temp(:,1),temp(:,2),temp(:,3),'r','linewidth',3);

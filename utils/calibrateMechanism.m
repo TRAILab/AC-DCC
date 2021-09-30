@@ -59,12 +59,12 @@ for i=1:max_iterations
         pause()
     end
     
-    if i<100
-        [update_delta, success] = opt_problem.solveLinearSystem();
-    else
-        opt_problem.opt_params.opt_type = 'GN';
-        [update_delta, success] = opt_problem.solveLinearSystem();
-    end
+    %if i<100
+    [update_delta, success] = opt_problem.solveLinearSystem();
+    %else
+    %    opt_problem.opt_params.opt_type = 'GN';
+    %    [update_delta, success] = opt_problem.solveLinearSystem();
+    %end
     %update_delta = opt_problem.solveLinearSystem(measurement_set, dcc_obj);
     %opt_problem.updateParameters(0.1*update_delta);
 

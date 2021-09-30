@@ -16,7 +16,7 @@ for i=1:size(avg_pixel_error,2)
     subplot(size(avg_pixel_error,2),1,i);
     bar(temp_measurement_avg_pixel_error);
     title(["Avg pix error:(M)", num2str(all_meas_set_avg_pixel_error)," (S)",num2str(std(temp_measurement_avg_pixel_error)),"(",dcc_obj.cameras{i+1}.sensor_name,")"]);
-    title([strcat('Avg pix error for each measurement set for:- ',dcc_obj.cameras{i+1}.sensor_name),strcat(' is mean: ', num2str(all_meas_set_avg_pixel_error), ' and std: ', num2str(std(temp_measurement_avg_pixel_error)))]);
+    title([strcat('Avg pix error for:- ',dcc_obj.cameras{i+1}.sensor_name),strcat(' is mean: ', num2str(all_meas_set_avg_pixel_error), ' and std: ', num2str(std(temp_measurement_avg_pixel_error)))]);
     hold on;
     plot(xlim,[all_meas_set_avg_pixel_error all_meas_set_avg_pixel_error], 'r')
     xticks(1:2:length(avg_pixel_error));

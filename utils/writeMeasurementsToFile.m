@@ -15,6 +15,12 @@ all_measurement_pixel_error_mean = zeros(size(encoder_angles_rad,1),length(sim_o
 
 opt_problem = setupOptimizationProblem(sim_obj, []);
 
+noisy_encoder_angles_rads = addNoise(encoder_angles_rad, 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
+%save(strcat(sim_obj.data_files.folder_path,'test_noisy_encoder_angles_rads.mat'),'noisy_encoder_angles_rads');
+%save(strcat(sim_obj.data_files.folder_path,'test_encoder_angles_rads.mat'),'encoder_angles_rad');
+%load(strcat(sim_obj.data_files.folder_path,'test_noisy_encoder_angles_rads.mat'));
+%load(strcat(sim_obj.data_files.folder_path,'test_encoder_angles_rads.mat'))
+
 for meas_num=1:size(encoder_angles_rad,1)
     
     fprintf(['\n',num2str(meas_num),' ==================================\n']);
@@ -25,7 +31,8 @@ for meas_num=1:size(encoder_angles_rad,1)
     % encoder std dev and get the measurement. However it should report the
     % true encoder angle in the measurement (here 20 deg).
     % Add noise to encoder angles
-    noisy_encoder_angles_rad = addNoise(encoder_angles_rad(meas_num,:), 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
+    %noisy_encoder_angles_rad = addNoise(encoder_angles_rad(meas_num,:), 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
+    noisy_encoder_angles_rad = noisy_encoder_angles_rads(meas_num,:);
     
     % Randomly move the base
     if sim_obj.move_base

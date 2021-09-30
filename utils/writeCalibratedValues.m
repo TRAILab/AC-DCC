@@ -25,7 +25,7 @@ end
 opt_theta_values = rad2deg(opt_theta_values);
 if size(opt_theta_values) == size(dcc_obj.encoder_collection)
     theta_errors = opt_theta_values - dcc_obj.encoder_collection;
-    theta_offsets_calc = mean(theta_errors);
+    theta_offsets_calc = mean(wrapTo180(theta_errors));
     theta_offsets_calc(abs(theta_offsets_calc)<zero_limit)=0;
 else
     theta_offsets_calc = zeros(1,dcc_obj.num_DH_links + dcc_obj.use_modified_DH_flag);
