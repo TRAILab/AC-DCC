@@ -8,16 +8,16 @@ fclose('all');
 format long
 
 %% Variable setup #################################### <--- Important to go through each of these and modify the values
-reprojection_threshold = 10;             % Allowed reprojection threshold to decide if a measurement is good or not
+reprojection_threshold = 5;             % Allowed reprojection threshold to decide if a measurement is good or not
 axis_len = 0.4;                         % Length of the axis (for display purposes)
-use_random_pts = 1;                     % Use random points in the environment (1) or a target (0) 
+use_random_pts = 0;                     % Use random points in the environment (1) or a target (0) 
 move_base = 0;                          % Decide if you want to move the drone
 add_identity_residual = 0;              % This is the loop residual for all static cameras
-num_measurements = 30;            %-----% What measurements do we want to analyze
+num_measurements = 15;            %-----% What measurements do we want to analyze
 bad_meas_idxs = [];                     % If we know any measurements are bad
-show_real_world_images = 0;             % Show the pixel error on real world images
+show_real_world_images = 1;             % Show the pixel error on real world images
 encoder_std_dev_deg = 10500;            % Uncertainty on the joint angle (This is just a high random value ?)
-have_true_values = 1;
+have_true_values = 0;
 reproj_error_formulation = 0;     %-----% Whether we want the reprojection error or pose loop formulation
 pixel_noise.mean = 0;                   % Pixel noise mean
 pixel_noise.std_dev = 0.2;             % Pixel noise std dev (This is mainly used for the covariance in the optimization)
@@ -25,24 +25,25 @@ pixel_noise.std_dev = 0.2;             % Pixel noise std dev (This is mainly use
 % Setup optimizer params #######################################
 opt_params.gradient_norm_threshold = 1e-12;
 opt_params.step_norm_threshold = 1e-12;
-opt_params.max_iterations = 500;
+opt_params.max_iterations = 2000;
 opt_params.success = 0;
 opt_params.opt_type = 'LM2'; % Options: GN, LM1, LM2
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/ijrr/multicamera_test/';
+data_files.folder_path = 'data/ijrr/hardware_exp/config1/';
 data_files.measurement_type = 'test/';
-data_files.real_image_path = strcat(data_files.folder_path,'real_images/');
+data_files.real_image_path = strcat(data_files.folder_path,'train_real_images/');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt'); % DCC relation in the world
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt'); % Parameters of the target if necessary
-data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt'); % List of all the sensor intrinsic files
-data_files.calibration_params_file_path = strcat(data_files.folder_path, 'multicamera_calibratedParams.txt'); % Use the initialization file for calibration
+data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams_nodist.txt'); % List of all the sensor intrinsic files
+data_files.calibration_params_file_path = strcat(data_files.folder_path, 'slam_calibratedParams.txt'); % Use the initialization file for calibration
 data_files.true_params_file_path = strcat(data_files.folder_path, 'trueParams.txt'); % True DCC calibration values
-data_files.optimized_params_file_path = strcat(data_files.folder_path, 'multicamera_calibratedParams.txt'); % Where the output values will be written
+data_files.optimized_params_file_path = strcat(data_files.folder_path, 'slam_calibratedParams.txt'); % Where the output values will be written
 data_files.use_random_pts = use_random_pts;
 
 %% Initialize simulation object
 dcc_obj = initDCC(data_files);
+dcc_obj = loadTransformsAndTarget(data_files, dcc_obj);
 dcc_obj.reprojection_threshold = reprojection_threshold;
 dcc_obj.data_files = data_files;
 dcc_obj.optimize_theta_flag = sum(dcc_obj.optimize_theta_flag_vec)>0;
@@ -79,7 +80,7 @@ dcc_obj.cel = cel;
 [dcc_obj, opt_problem] = calibrateMechanism(dcc_obj, opt_problem, measurement_set);
 
 % Write the calibrated values to file
-if strcmp(data_files.measurement_type,'train/')
+if contains(data_files.measurement_type,'train')
     writeCalibratedValues(dcc_obj, opt_problem);
 end
 

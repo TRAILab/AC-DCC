@@ -19,11 +19,11 @@ use_random_pts = 0;                     % Use random points in the environment (
 target_pts_filename = 'noisy_cube.mat';         % This is the file that stores the target points
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/ijrr/multicamera_test/';
+data_files.folder_path = 'data/dc_vins/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
-data_files.calibration_params_file_path = strcat(data_files.folder_path,'trueParams.txt');
+data_files.calibration_params_file_path = strcat(data_files.folder_path,'realhardware_trueParams.txt');
 data_files.use_random_pts = use_random_pts;
 data_files.target_pts_filename = target_pts_filename;
 

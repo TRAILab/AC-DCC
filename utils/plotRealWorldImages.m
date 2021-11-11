@@ -1,5 +1,8 @@
 function plotRealWorldImages(dcc_obj, opt_problem, measurement_set, avg_pixel_error)
 
+%% Description
+% Plot pixel error on real images
+
 real_image_path = dcc_obj.data_files.real_image_path;
 optimize_theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
 
@@ -10,8 +13,8 @@ for c=1:length(dcc_obj.cameras)-1
     callFigure(strcat("Real World: ", sensor_name));
     clf;
     avg_pe = avg_pixel_error(:,c);
-    [max_avg_pe, top_worse_idxs] = maxk(avg_pe,9);
-    real_image_idxs = getModifiedIdxs(dcc_obj.num_measurements, dcc_obj.bad_meas_idxs, top_worse_idxs);
+    [max_avg_pe, top_worse_idxs] = maxk(avg_pe, 9);
+    real_image_idxs = getModifiedIdxs(dcc_obj.bad_meas_idxs, top_worse_idxs);
     for m=1:9
         top_worse_idx = top_worse_idxs(m);
         subplot(3,3,m);
