@@ -1,0 +1,21 @@
+% Transforms for simulated measurements
+% Origin World
+world:
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+
+% Transform from target to world. Co-ordinate system is lower left corner
+T_WT:
+0 0 -1 1.5
+-1 0 0 0.6
+0 1 0 -0.70
+0 0 0 1
+
+% Transform from Base of Mechanism to world
+T_WB:
+-0.173648177666930  -0.984807753012208  -0.000000000000000                   0
+-0.984807753012208   0.173648177666930   0.000000000000000                   0
+0   0.000000000000000  -1.000000000000000                   0
+0                   0                   0   1.000000000000000

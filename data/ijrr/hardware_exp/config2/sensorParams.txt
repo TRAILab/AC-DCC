@@ -1,0 +1,5 @@
+% sensor_name, sensor_file (mainly used for camera)
+start:
+camera1.yaml
+camera3.yaml
+end:

@@ -1,0 +1,15 @@
+sensor_name: static2
+sensor_id: S2
+model_type: pinhole
+distortion_type: radtan
+width: 1280
+height: 1024
+fx: 668.908581
+fy: 668.019440
+cx: 652.276967
+cy: 503.858537
+k1: 0
+k2: 0
+k3: 0
+p1: 0
+p2: 0

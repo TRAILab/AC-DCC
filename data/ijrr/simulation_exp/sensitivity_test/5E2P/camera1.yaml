@@ -1,0 +1,15 @@
+sensor_name: gimbal
+sensor_id: M
+model_type: pinhole
+distortion_type: radtan
+width: 1344
+height: 720
+fx: 1149.14070
+fy: 1166.53034
+cx: 686.376129
+cy: 346.480807
+k1: -0.0081274
+k2: -0.0115269
+k3: 0
+p1: -0.0019281
+p2: 0.00310307

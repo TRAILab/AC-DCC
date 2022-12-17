@@ -1,0 +1,6 @@
+% sensor_name, sensor_file (mainly used for camera)
+start:
+camera1_nodist.yaml
+camera2_nodist.yaml
+camera3_nodist.yaml
+end:
