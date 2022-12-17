@@ -2,8 +2,11 @@ clear all
 clc
 close all
 
+%% This file verifies the jacobians of the DH matrix wrt each parameter.
+
 format long;
 
+% Initializes random values
 theta = rand;
 d = rand;
 a = rand;
@@ -11,14 +14,17 @@ alpha = rand;
 
 perturbation = sqrt(eps);
 
+% Generates true and perturbed DH matrices
 DH_orig = generateDHMatrix(theta, d, a, alpha);
 DH_theta_perturbed = generateDHMatrix(theta+perturbation, d, a, alpha);
 DH_d_perturbed = generateDHMatrix(theta, d+perturbation, a, alpha);
 DH_a_perturbed = generateDHMatrix(theta, d, a+perturbation, alpha);
 DH_alpha_perturbed = generateDHMatrix(theta, d, a, alpha+perturbation);
 
+% Gets DH jacobians
 DH_jac = DHJacobians(theta, d, a, alpha);
 
+% Converts DH matrices to Transformation matrices
 DH_orig_T = Transformation(zeros(1,6));
 DH_theta_perturbed_T = Transformation(zeros(1,6));
 DH_d_perturbed_T = Transformation(zeros(1,6));
@@ -31,6 +37,7 @@ DH_d_perturbed_T.matrix = DH_d_perturbed;
 DH_a_perturbed_T.matrix = DH_a_perturbed;
 DH_alpha_perturbed_T.matrix = DH_alpha_perturbed;
 
+% Gets numerical jacobians of DH parameters
 theta_jac_num = DH_theta_perturbed_T.manifoldMinus(DH_orig_T);
 theta_jac_num = theta_jac_num./perturbation;
 d_jac_num = DH_d_perturbed_T.manifoldMinus(DH_orig_T);
@@ -42,6 +49,7 @@ alpha_jac_num = alpha_jac_num./perturbation;
 
 num_jac = [theta_jac_num d_jac_num a_jac_num alpha_jac_num];
 
+% Verifies analytical jacobian
 for i=1:4
     norm_error = norm(num_jac(:,i)-DH_jac(:,i));
     norm_num = norm(num_jac(:,i));

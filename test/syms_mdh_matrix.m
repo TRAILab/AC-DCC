@@ -2,6 +2,8 @@ clear all
 clc
 close all
 
+%% Gets symbolic modified DH matrix
+
 syms theta d a alpha beta y
 
 T_theta = [cos(theta) -sin(theta) 0 0;
@@ -28,4 +30,5 @@ T_y = [1 0 0 0;
        0 1 0 y;
        0 0 1 0;
        0 0 0 1];
+   
 T = T_theta*T_d*T_a*T_alpha*T_beta*T_y;

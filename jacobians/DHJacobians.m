@@ -1,7 +1,5 @@
 function complete_jac = DHJacobians(theta, d, a, alpha)
-
-%% Description
-% Jacobian of the DH matrix wrt individual parameters
+%% Jacobian of the DH matrix wrt each parameter.
 
 theta_jac = [0 0 1 -a*sin(theta) a*cos(theta) 0];
 

@@ -1,7 +1,5 @@
 function complete_jac = MDHJacobians(theta, d, a, alpha, beta, y)
-
-%% Description
-% Jacobian of the Modified DH matrix wrt individual parameters
+%% Jacobian of the modified DH matrix wrt each parameter.
 
 theta_jac = [0 0 1 -a*sin(theta)-y*cos(theta)*cos(alpha) a*cos(theta)-y*sin(theta)*cos(alpha) 0];
 

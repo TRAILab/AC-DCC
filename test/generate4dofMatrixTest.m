@@ -1,4 +1,5 @@
 function M = generate4dofMatrixTest(rx,ry,tx,ty)
+%% Returns a 4 DOF matrix
 
 M = [cos(ry) 0 sin(ry) tx*cos(ry);
     sin(rx)*sin(ry) cos(rx) -sin(rx)*cos(ry) ty*cos(rx) + tx*sin(ry)*sin(rx);
