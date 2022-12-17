@@ -1,7 +1,5 @@
 function single_measurement_set = loadDataGroup(seq_num, camera_group, data_files)
-
-%% Description
-% Loads a data file a single data group and stores the poses, pixels, 3D
+%% Loads a data file a single data group and stores the poses, pixels, 3D
 % points for all the cameras belonging to one measurement set
 
 num_cameras = length(camera_group);
@@ -15,7 +13,7 @@ for i=1:num_cameras
     if isfile(file_string)
         [T_CW, T_CW_cov, target_points, pixels, gimbal_angles] = loadSingleMeasurement(file_string);
 
-        % Calculate the PnP sanity check
+        % Calculates the PnP sanity check
         if ~isempty(target_points) && ~isempty(pixels)
             [T_CW_data, ~] = solvePnPBA(target_points, pixels, camera_group{i}, T_CW);
             T_CW = T_CW_data.matrix;
@@ -29,6 +27,8 @@ for i=1:num_cameras
         gimbal_angles = [];
     end
     
+    % Stores the measurements for all cameras for the particular
+    % measurement
     single_measurement_set(i).T_CW = T_CW;
     single_measurement_set(i).T_CW_cov = T_CW_cov;
     single_measurement_set(i).name = camera_name;

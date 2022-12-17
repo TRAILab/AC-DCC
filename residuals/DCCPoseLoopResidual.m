@@ -1,7 +1,5 @@
 function [white_residual, white_J_total, calib_error] = DCCPoseLoopResidual(parameter_container, measurement_set, dcc_obj)
-
-%% Description
-% This file returns the poseloop residual and jacobian.
+%% This file returns the poseloop residual and jacobian.
 
 optimize_theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
 joint_angles = measurement_set.theta_vec;
@@ -15,12 +13,15 @@ for i=1:length(joint_angles)
         joint_angles(i) = parameter_container.getKeyValue(key);
     end
 end
+
+% Estimates the transformation from moving to static camera
 [T_SM_est_mat, transform_chain] = movingToStaticChain(parameter_container, joint_angles, dcc_obj);
 T_SM_est = Transformation(T_SM_est_mat);
 
-% calculate Jacobian
+% Calculates the jacobian from moving to static camera
 [J_chain, J_theta] = movingToStaticChainJacobianPoseLoop(parameter_container, joint_angles, dcc_obj, transform_chain);
 
+% Determines which static camera to incorporate
 static_cam_num = str2double(dcc_obj.static_cam_key(4));
 
 % Get data for calculating the jacobians

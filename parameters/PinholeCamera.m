@@ -1,8 +1,5 @@
 classdef PinholeCamera<handle
-    
-    %% Description
-    % This file contains all the functions necessary for the pinhole camera
-    % model.
+    %% Class that defines the Pinhole Camera model
     
     properties
         sensor_name
@@ -25,7 +22,9 @@ classdef PinholeCamera<handle
     end
     
     methods
+        
         function obj = PinholeCamera(yaml_map)
+            % Initializes the Pinhole Camera object
             obj.sensor_name = yaml_map('sensor_name');
             obj.sensor_id = yaml_map('sensor_id');
             obj.model_type = yaml_map('model_type');
@@ -46,7 +45,7 @@ classdef PinholeCamera<handle
         end
         
         function pixels = project(obj, points)
-            
+            % Projects points in camera frame onto image plane
             num_pts = size(points,1);
             
             x_dash = points(:,1)./points(:,3);
@@ -63,9 +62,9 @@ classdef PinholeCamera<handle
             pixels(:,2) = obj.fy*y_ddash + obj.cy*ones(num_pts,1);
         end 
         
-        % Plot the pixels on the iamge plane and return the handle to the
-        % plot
         function ax = plotPixels(obj, pixels)
+            % Plot the pixels on the iamge plane and return the handle to
+            % the image
             if isempty(findobj('type','figure','name',obj.sensor_name))
                 f = figure('Name',obj.sensor_name);   
             else
@@ -85,8 +84,9 @@ classdef PinholeCamera<handle
             ax = gca;
         end
         
-        % Plot the FOV of the camera.
+        
         function plotFOV(obj, T_WC)
+            % Plot the FOV of the camera.
             if isempty(findobj('type','figure','name','Dynamic Camera Cluster'))
                 figure('Name',obj.sensor_name);   
             else
@@ -112,10 +112,11 @@ classdef PinholeCamera<handle
             plot3([fov_pts_wrld(1,1),fov_pts_wrld(4,1)],[fov_pts_wrld(1,2),fov_pts_wrld(4,2)],[fov_pts_wrld(1,3),fov_pts_wrld(4,3)],'b');
         end
         
-        % Get indices that fall on the image but are also within the FOV of
-        % the camera. Sometimes points outside the FOV fall on the image
-        % plane (weird!)
+        
         function pixel_indices = getIndicesOnImage(obj, pixels, camera_points)
+            % Get indices that fall on the image but are also within the FOV of
+            % the camera. Sometimes points outside the FOV fall on the image
+            % plane (TODO: fix)
             xs = pixels(:,1);
             ys = pixels(:,2);
             pixel_indices = find(xs>0 & xs<obj.width & ys>0 & ys<obj.height & camera_points(:,3)>0);
@@ -123,15 +124,17 @@ classdef PinholeCamera<handle
             pixel_indices = pixel_indices(selected_indices);
         end
         
-        % Get the 3D points expressed in camera frame within the FOV based
-        % on the cosine of the angle with the optical axis.
+        
         function point_indices = getIndicesInFOV(obj, camera_points)
+            % Get the indices of 3D points expressed in camera frame within 
+            % the FOV based on the cosine of the angle with the optical axis.
             xfov = abs(rad2deg(atan2(camera_points(:,1),camera_points(:,3))));
             yfov = abs(rad2deg(atan2(camera_points(:,2),camera_points(:,3))));
             point_indices = find(xfov<obj.fovx & yfov<obj.fovy);
         end
         
         function J = projectionJacobian(obj, point)
+            % Gets the projection jacobian for a point
             q1 = point(1);
             q2 = point(2);
             q3 = point(3);
@@ -140,6 +143,7 @@ classdef PinholeCamera<handle
         end
         
         function [p,J] = projectAndJacobian(obj,point)
+            % Projects the point and returns the jacobian
             p = obj.project(point);
             J = obj.projectionJacobian(point);
         end

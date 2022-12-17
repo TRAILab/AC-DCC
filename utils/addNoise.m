@@ -1,10 +1,9 @@
 function noisy_vals = addNoise(orig_value, noise_type, noise_vals, theta_flag_vec)
-
-%% Description
-% Add gaussian noise to variables based on noise type, if we are dealing
+%% Add gaussian noise to variables based on noise type, if we are dealing
 % with joint angles, we need to know which angles to add noise to specified
 % in the vector theta_flag_vec
 
+% Adds noise to the transformation parameters
 if strcmp(noise_type, 'transformation')
     
     trans_noise = noise_vals.trans;
@@ -22,11 +21,13 @@ else
     % Generate random numbers 
     rng('shuffle');
     noise = normrnd(noise_vals.mean, noise_vals.std_dev, num_vals, num_dim);
-
+    
+    % Adds noise to encoder values
     if strcmp(noise_type, 'enc')
         noisy_vals = orig_value + noise.*theta_flag_vec;
         %noisy_vals = wrapToPi(noisy_vals);
     elseif strcmp(noise_type, 'pix')
+        % Adds noise to pixe
         noisy_vals = orig_value + noise;
     end
     

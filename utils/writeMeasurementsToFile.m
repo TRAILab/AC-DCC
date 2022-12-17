@@ -1,7 +1,5 @@
 function sim_obj = writeMeasurementsToFile(sim_obj, input_angles)
-
-%% Description:
-% This function is used to generate simulated measurements for calibration
+%% This function is used to generate simulated measurements for calibration
 % and writes it to a file
 
 % Store Variables
@@ -13,8 +11,16 @@ optimize_theta_flag_vec = sim_obj.optimize_theta_flag_vec;
 noisy_encoder_angles_rad_list = zeros(size(input_angles));
 all_measurement_pixel_error_mean = zeros(size(encoder_angles_rad,1),length(sim_obj.cameras));
 
+% Sets up the optimization problem
 opt_problem = setupOptimizationProblem(sim_obj, []);
 
+% Adds noise to all encoder values
+% We want to add noise to the encoder angle before we move to get the
+% measurement. Eg. If we have to collect a measurement from 20 deg, the
+% simulator should move to a slightly different angle based on the
+% encoder std dev and get the measurement. However it should report the
+% true encoder angle in the measurement (here 20 deg).
+% Add noise to encoder angles
 noisy_encoder_angles_rads = addNoise(encoder_angles_rad, 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
 %save(strcat(sim_obj.data_files.folder_path,'test_noisy_encoder_angles_rads.mat'),'noisy_encoder_angles_rads');
 %save(strcat(sim_obj.data_files.folder_path,'test_encoder_angles_rads.mat'),'encoder_angles_rad');
@@ -25,13 +31,6 @@ for meas_num=1:size(encoder_angles_rad,1)
     
     fprintf(['\n',num2str(meas_num),' ==================================\n']);
     
-    % We want to add noise to the encoder angle before we move to get the
-    % measurement. Eg. If we have to collect a measurement from 20 deg, the
-    % simulator should move to a slightly different angle based on the
-    % encoder std dev and get the measurement. However it should report the
-    % true encoder angle in the measurement (here 20 deg).
-    % Add noise to encoder angles
-    %noisy_encoder_angles_rad = addNoise(encoder_angles_rad(meas_num,:), 'enc', sim_obj.encoder_noise, optimize_theta_flag_vec);
     noisy_encoder_angles_rad = noisy_encoder_angles_rads(meas_num,:);
     
     % Randomly move the base
@@ -70,6 +69,8 @@ for meas_num=1:size(encoder_angles_rad,1)
         % Get the Target points in the target frame, for which the pixels are on the plane
         target_pts_seen_in_cam = target_pts(cam_indices_on_plane, :);
         
+        % Adds noise to the transformation and solves the BA problem to
+        % recover the actual pose
         if size(target_pts_seen_in_cam, 1)>4
             disp(strcat("Solving PnP for Cam: ", sim_obj.cameras{c}.sensor_name));
             cam_T_target_orig = T_WC\T_WT;
@@ -96,7 +97,8 @@ for meas_num=1:size(encoder_angles_rad,1)
     disp('---------------------------------------------------------------');
 end
 
-%% Write noisy encoder angles to a new file
+%% Write noisy encoder angles to file
+% These are true angles, since these are the angles the gimbal moved to.
 complete_path = strcat(folder_path, 'true_encoder_angles.txt');
 fileID = fopen(complete_path,'wt');
 fprintf(fileID,'True encoder values\n');

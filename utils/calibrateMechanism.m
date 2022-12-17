@@ -48,7 +48,7 @@ for i=1:max_iterations
         plotRealWorldImages(dcc_obj, opt_problem, measurement_set, avg_pixel_error);
     end
     
-    %% Solve the linear system.
+    % Rearrange the joint angle jacobians into block diagonal structure
     if dcc_obj.optimize_theta_flag
         opt_problem.J = rearrangeThetaJacobian(dcc_obj, opt_problem.J, measurement_set);
     end
@@ -59,12 +59,13 @@ for i=1:max_iterations
         pause()
     end
     
+    % Solves the optimization problem
     [update_delta, success] = opt_problem.solveLinearSystem();
 
     S=sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
     disp(S);
     
-    % check stopping criteria.
+    % Checks stopping criteria.
     if( (norm(opt_problem.g)<=gradient_norm_threshold) ||(norm(update_delta)<=step_norm_threshold) || success)
         disp('Reached first order optimality threshold');
         %S=sprintf('Iteration: %d | residual norm: %0.5e | gradient norm: %0.5e | step norm: %0.5e',i, norm(opt_problem.r),norm(opt_problem.g),norm(update_delta));
@@ -75,5 +76,3 @@ for i=1:max_iterations
     % Clear system and perform next iteration
     opt_problem.clearLinearSystem();
 end
-
-a = 1;

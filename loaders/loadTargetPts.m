@@ -1,7 +1,5 @@
 function target_pts_CB = loadTargetPts(filepath)
-
-%% Description:
-% This file loads a checkerboard target based on parameters referenced in
+%% This file loads a checkerboard target based on parameters referenced in
 % the file.
 
 fid = fopen(filepath);
@@ -23,7 +21,7 @@ tline = fgetl(fid);
 temp = sscanf(tline,'%f');
 height = temp;
 
-% Create Target coordinates in target frame {CB}
+% Creates target points in target frame {CB: Checkerboard}
 target_pts_CB = [];
 for w=0:width-1
     for h=0:height-1

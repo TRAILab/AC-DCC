@@ -1,7 +1,5 @@
 classdef ParameterContainer<handle
-    
-    %% Description
-    % This holds the parameter container for all the optimization variables
+    %% This holds the parameter container for all the optimization variables
     
     properties
         parameter_list = {};
@@ -11,6 +9,7 @@ classdef ParameterContainer<handle
     
     methods
         function [] = addParameter(obj,parameter)
+           % Adds the parameter to the optimization problem
            parameter.setColumnIndex(obj.index_counter)
            obj.index_counter = obj.index_counter+parameter.tangentspace_dim;
            
@@ -22,6 +21,7 @@ classdef ParameterContainer<handle
         end
         
         function [idx] = getKeyIndex(obj,key)
+            % Gets the index of the key for the parameter
             if(isKey(obj.parameter_key_map,key))
                 idx = obj.parameter_key_map(key);
             else
@@ -30,6 +30,7 @@ classdef ParameterContainer<handle
         end
         
         function [value] = getKeyValue(obj,key)
+            % Gets the value of the object based on the key
             if isKey(obj.parameter_key_map, key)
                 idx = obj.parameter_key_map(key);
                 if isa(obj.parameter_list{idx}.parameter,'Transformation')

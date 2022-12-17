@@ -1,9 +1,0 @@
-% Camera Intrinsics format: name [1], resolution[2], distortions[4] [k1 k2 k3 k4 k5], intrinsic matrix[3x3]
-start:
-pinhole
-radtan
-3
-gimbal, 751, 481, 0.0 0.0 0.0 0.0 0.0, 240, 0, 375.282, 0, 241.864, 239.567, 0, 0, 1
-static1, 752, 482, 0.0 0.0 0.0 0.0 0.0, 241, 0, 375.282, 0, 241.864, 239.567, 0, 0, 1
-static2, 753, 483, 0.0 0.0 0.0 0.0 0.0, 242, 0, 375.282, 0, 241.864, 239.567, 0, 0, 1
-end:

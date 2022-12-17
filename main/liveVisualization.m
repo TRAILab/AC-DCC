@@ -2,9 +2,9 @@ clear all
 clc
 close all
 
-%% Description
-% This file is used to visualize the simulation by observing the change in
-% the mechanism using angles provided by the sliders.
+%% This file is used to visualize the DCC before calibration. To make sure 
+% that the parameters and joint angles make sense
+
 format long
 global input_angles dsc_obj orig_T_WB;
 
@@ -15,15 +15,15 @@ pixel_noise.mean = 0;                   % Pixel noise mean
 pixel_noise.std_dev = 0.0;              % Pixel noise std dev
 encoder_noise.mean = 0;                 % Encoder noise mean (deg)
 encoder_noise.std_dev = 0;              % How much noise to add to the encoder values (deg)
-use_random_pts = 0;                     % Use random points in the environment (1) or a target (0)
+use_random_pts = 0;                     % Use random points in the environment (1) or a target [checkerboard] (0)
 target_pts_filename = 'noisy_cube.mat';         % This is the file that stores the target points
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/dc_vins/';
+data_files.folder_path = 'data/other_experiments/single_cam_new_param/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');
-data_files.calibration_params_file_path = strcat(data_files.folder_path,'realhardware_trueParams.txt');
+data_files.calibration_params_file_path = strcat(data_files.folder_path,'trueParams.txt');
 data_files.use_random_pts = use_random_pts;
 data_files.target_pts_filename = target_pts_filename;
 
@@ -38,7 +38,8 @@ dsc_obj.data_files = data_files;
 dsc_obj.optimize_theta_flag = sum(dsc_obj.optimize_theta_flag_vec)>0;
 dsc_obj.use_random_points = use_random_pts;
 
-% Go through the links and find out the midpoint of the angles
+% Go through the links and find out the midpoint of the angles based on the
+% joint angle limits
 joint_angle_count = 0;
 for i=1:length(dsc_obj.link_struct)
     if strcmp(dsc_obj.link_struct(i).type,'mdh') || strcmp(dsc_obj.link_struct(i).type,'dh')

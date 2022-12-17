@@ -1,10 +1,7 @@
 classdef Transformation<handle
-    
-    %% Description
-    % This file is the transformation parameter class
+    %% This file is the transformation parameter class
     
     properties
-        % Internal storage
         matrix;
     end
     
@@ -23,15 +20,15 @@ classdef Transformation<handle
         end
         
         function r = transform(obj, input_vector)
-            % Create homogenous vector
+            % Transforms a vector via the matrix
             input_vector = reshape(input_vector,[3,1]);
             input_vector = [input_vector ;1];
             r = obj.matrix*input_vector;
             r = r(1:3);
         end
         
-        function [transformed, J_T, J_p] = transformAndJacobian(obj,input_vector)
-        
+        function [transformed, J_T, J_p] = transformAndJacobian(obj, input_vector)
+            % Transforms the point an returns the Jacobians
             input_vector = reshape(input_vector,[3,1]);
             transformed = obj.transform(input_vector);
             transformed = reshape(transformed, [1,3]);
@@ -48,8 +45,8 @@ classdef Transformation<handle
             J_p = obj.matrix(1:3,1:3);
         end
         
-        function [composed,J_obj, J_in] = composeAndJacobian(obj,input_transform)
-           
+        function [composed, J_obj, J_in] = composeAndJacobian(obj, input_transform)
+            % Composes two transformations and returns the jacobians
             composed = Transformation(obj.matrix*input_transform.matrix);
             % Jacobian wrt the object
             J_obj = zeros(6,6);
@@ -58,7 +55,7 @@ classdef Transformation<handle
             J_obj(4:6,1:3) = -skewSymmetricMatrix3(t);
             J_obj(4:6,4:6) = eye(3);
             
-            %Jacobian wrt the input
+            % Jacobian wrt the input
             J_in = zeros(6,6);
             R = obj.matrix(1:3,1:3);
             J_in(1:3,1:3) = R;
@@ -67,7 +64,7 @@ classdef Transformation<handle
         end
         
         function [T_inverse, J_inverse] = inverseAndJacobian(obj)
-        
+                % Returns the inverse transformation and the Jacobian
                 T_inverse = Transformation([0 0 0 0 0 0]);
                 R_inv = obj.matrix(1:3,1:3)';
                 T_inverse.matrix(1:3,1:3) = R_inv;
@@ -83,6 +80,7 @@ classdef Transformation<handle
         end
         
         function [difference] = manifoldMinus(obj, input_transformation)
+            % Returns the manifold minus between two transformations
             % compute the boxminus for the rotations
             R_obj = Rotation(obj.matrix(1:3,1:3));
             R_in =  Rotation(input_transformation.matrix(1:3,1:3));
@@ -109,6 +107,8 @@ classdef Transformation<handle
         end
         
         function [difference, J_left, J_right] = manifoldMinusAndJacobian(obj, T_right)
+            % Returns the manifold difference between two transformations
+            % and the corresponding Jacobians
             difference = obj.manifoldMinus(T_right);
             %compute Jacobians
             R1 = Rotation(obj.matrix(1:3,1:3));
@@ -126,6 +126,7 @@ classdef Transformation<handle
         end
         
         function [] = manifoldPlus(obj, perturbation)
+            % Performs the manifold plus to the transformation matrix
             perturbation = reshape(perturbation,[6,1]);
             % rotation perturbation is in so3
             
@@ -139,6 +140,7 @@ classdef Transformation<handle
         end
         
         function [p] = getParams(obj)
+            % Gets the parameters from the transformation
             p = trans2param(obj.matrix);
         end
         

@@ -1,7 +1,6 @@
 function calcParamDiff(filepath1, filepath2)
 
-%% Description
-% This file calculates the difference in rotation and translation
+%% This file calculates the difference in rotation and translation
 % parameters if we know the true values
 
 angle_params = containers.Map;

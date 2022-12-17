@@ -1,7 +1,5 @@
 function dcc_obj = initDCC(data_files)
-
-%% Description: 
-% This file is used to initialize the simulation object
+%% Initializes the Dynamic Camera Cluster
 
 % Load the intrinsics for each camera
 dcc_obj.cameras = loadCameraData(data_files);
@@ -10,7 +8,8 @@ dcc_obj.cameras = loadCameraData(data_files);
 link_struct = loadLinkParams(data_files.calibration_params_file_path);
 dcc_obj.link_struct = link_struct;
 
-% Note if we are using mdh, 4dof and which angles to optimize over
+% Determine what parameterization we are using and which joint angles to
+% optimize over.
 dcc_obj.use_modified_DH_flag = 0;
 dcc_obj.use_4dof_flag = 0;
 dcc_obj.num_DH_links = 0;
@@ -29,5 +28,5 @@ for i=1:length(link_struct)
 end
 dcc_obj.optimize_theta_flag_vec = optimize_theta_flag_vec;
 
-% Check that the we have the right number of links
+% Checsk that the we have the right number of links
 assert(dcc_obj.num_DH_links + length(dcc_obj.cameras) == length(link_struct), 'There is a mismatch between number of links and camera parameters');

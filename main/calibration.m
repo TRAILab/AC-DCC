@@ -3,7 +3,7 @@ clc
 close all
 fclose('all');
 
-% This is the main file to run to perform calibration
+%% This is the main file to run to perform calibration
 
 format long
 
@@ -13,11 +13,11 @@ axis_len = 0.4;                         % Length of the axis (for display purpos
 use_random_pts = 0;                     % Use random points in the environment (1) or a target (0) 
 move_base = 0;                          % Decide if you want to move the drone
 add_identity_residual = 0;              % This is the loop residual for all static cameras
-num_measurements = 15;            %-----% What measurements do we want to analyze
-bad_meas_idxs = [];                     % If we know any measurements are bad
-show_real_world_images = 1;             % Show the pixel error on real world images
+num_measurements = 50;            %-----% What measurements do we want to analyze
+bad_meas_idxs = [];                     % If we know any measurements are bad and dont want to include them in the optimization
+show_real_world_images = 0;             % Show the pixel error on real world images
 encoder_std_dev_deg = 10500;            % Uncertainty on the joint angle (This is just a high random value ?)
-have_true_values = 0;
+have_true_values = 1;
 reproj_error_formulation = 0;     %-----% Whether we want the reprojection error or pose loop formulation
 pixel_noise.mean = 0;                   % Pixel noise mean
 pixel_noise.std_dev = 0.2;             % Pixel noise std dev (This is mainly used for the covariance in the optimization)
@@ -30,15 +30,15 @@ opt_params.success = 0;
 opt_params.opt_type = 'LM2'; % Options: GN, LM1, LM2
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/ijrr/hardware_exp/config1/';
-data_files.measurement_type = 'test/';
+data_files.folder_path = 'data/other_experiments/single_cam_new_param/';
+data_files.measurement_type = 'train/';
 data_files.real_image_path = strcat(data_files.folder_path,'train_real_images/');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt'); % DCC relation in the world
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt'); % Parameters of the target if necessary
-data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams_nodist.txt'); % List of all the sensor intrinsic files
-data_files.calibration_params_file_path = strcat(data_files.folder_path, 'slam_calibratedParams.txt'); % Use the initialization file for calibration
+data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt'); % List of all the sensor intrinsic files
+data_files.calibration_params_file_path = strcat(data_files.folder_path, 'initParams.txt'); % Use the initialization file for calibration
 data_files.true_params_file_path = strcat(data_files.folder_path, 'trueParams.txt'); % True DCC calibration values
-data_files.optimized_params_file_path = strcat(data_files.folder_path, 'slam_calibratedParams.txt'); % Where the output values will be written
+data_files.optimized_params_file_path = strcat(data_files.folder_path, 'optimizedParams.txt'); % Where the output values will be written
 data_files.use_random_pts = use_random_pts;
 
 %% Initialize simulation object
@@ -55,7 +55,7 @@ dcc_obj.num_measurements = num_measurements;
 dcc_obj.reproj_error_formulation = reproj_error_formulation;
 dcc_obj.pixel_noise = pixel_noise;
 
-% Get measurements
+% Loads measurements
 [measurement_set, dcc_obj] = loadMeasurements(dcc_obj);
 %load('data/realworld1/train/dcc_obj.mat');
 %load('data/realworld1/train/measurement_set.mat');
@@ -84,8 +84,9 @@ if contains(data_files.measurement_type,'train')
     writeCalibratedValues(dcc_obj, opt_problem);
 end
 
-% Calculate the error between true and calibrated values
-if have_true_values==1
+% Calculate the error between true, initialized and calibrated values
+if have_true_values
+    disp("=========================================");
     disp('Difference between true and initial values');
     calcParamDiff(data_files.true_params_file_path, data_files.calibration_params_file_path);
     disp("=========================================");

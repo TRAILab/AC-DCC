@@ -1,24 +1,23 @@
 function [T_CW_data, L2error] = solvePnPBA(target_pts_3D, pixels, camera_object, T_CW_init)
 
-%% Description
-% Function returns the transformation from target frame or world frame to camera frame.
+%% Function returns the transformation from target frame or world frame to camera frame.
 % This version uses bundle adjustment, not homography, so it can work
 % without the planar assumption.
 
-% set up the initial guess
+% Converts the matrix to a transformation parameter
 T_CW_opt = Transformation(T_CW_init);
 
-% only going to optimize over one parameter
+% Adds the transformation as an optimization parameter
 O1 = OptimizationParameter(T_CW_opt, 6);
 
-% set up the parameter container
+% Sets up the parameter container
 parameter_container = ParameterContainer;
 parameter_container.addParameter(O1);
 
-% set up the optimization problem
+% Sets up the optimization problem
 opt_problem = Problem(parameter_container);
 
-% perform the optimization
+% Performs the optimization
 opt_params.gradient_norm_threshold = 1e-6;
 opt_params.step_norm_threshold = 1e-10;
 opt_params.max_iterations = 500;

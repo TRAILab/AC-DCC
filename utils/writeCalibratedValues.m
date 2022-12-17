@@ -1,17 +1,16 @@
 function writeCalibratedValues(dcc_obj, opt_problem)
-
-%% Description
-% This function writes the calibration values to the file 
+%% This function writes the calibration values to the file 
 
 format short;
 
 zero_limit = 1e-5;
 
+% Sets up the file to write the calibrated values
 calibrated_file_id = fopen(dcc_obj.data_files.optimized_params_file_path,'w');
 parameter_container = opt_problem.parameter_container;
 link_structs = dcc_obj.link_struct;
 
-% Get the theta values
+% Get the theta values after optimization
 opt_theta_values = zeros(length(dcc_obj.good_meas_idxs), sum(dcc_obj.optimize_theta_flag_vec));
 for i=1:length(parameter_container.parameter_list)
     parameter = parameter_container.parameter_list{i};
@@ -98,4 +97,3 @@ end
 
 fprintf(calibrated_file_id,"%s","end:");
 fclose(calibrated_file_id);
-a = 1;

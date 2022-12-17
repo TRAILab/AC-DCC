@@ -1,8 +1,7 @@
 function [T_CW, T_CW_cov, target_points, pixels, gimbal_angles] = loadSingleMeasurement(filename)
 
-%% Description
-% This function reads a single measurement from the text file so that it
-% can be read
+%% This function reads a single measurement for a single camera from the 
+% text file 
 
 fid = fopen(filename);
 
@@ -30,7 +29,7 @@ while ~strcmp('end:',tline)
     tline = fgetl(fid);
 end
     
-    % Read the Transformation matrix
+    % Read the Transformation matrix from world to camera
     function readTCW()
         for i=1:4
             tline = fgetl(fid);
@@ -40,7 +39,7 @@ end
         T_CW = tranValidate(T_CW);
     end
 
-    % Read the Transformation matrix
+    % Reads the covariance matrix of the transformation
     function readTCWCov()
         for i=1:6
             tline = fgetl(fid);
@@ -52,7 +51,7 @@ end
         end
     end
 
-    % Read the Transformation matrix
+    % Reads the points and pixels from the measurement file
     function readTargetPointsPix()
         tline = fgetl(fid);
         while ~strcmp(tline,'')
@@ -63,7 +62,7 @@ end
         end
     end
 
-    % Read the Transformation matrix
+    % Reads the gimbal angles
     function readGimbalAngles()
         tline = fgetl(fid);
         a = sscanf(tline,'%f');

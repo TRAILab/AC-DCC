@@ -1,7 +1,5 @@
 function opt_problem = setupOptimizationProblem(dcc_obj, measurement_set)
-
-%% Description:
-% This function sets up the optimization problem for the calibration
+%% This function sets up the optimization problem for the calibration
 
 % set up the parameter container
 parameter_container = ParameterContainer;
@@ -9,7 +7,7 @@ parameter_container.parameter_key_map = containers.Map; % we do this because eve
                                                         % matlab still holds old containers and therefore we need to reset
 
 if strcmp(dcc_obj.link_struct(1).type,'mdh')
-    % Add the moving camera to end effector modified 6dof dh
+    % Adds the transformation from dynamic camera to previous joint
     idx_map = dcc_obj.link_struct(1).index_map;
     dvs = dcc_obj.link_struct(1).default_values;
     
@@ -20,7 +18,7 @@ if strcmp(dcc_obj.link_struct(1).type,'mdh')
         d_opt_param = OptimizationParameter(MDHParamD(dvs(2)), 1, 'mdh_d_1');
         parameter_container.addParameter(d_opt_param);
     end
-    if(idx_map(3)>0) % r parameter
+    if(idx_map(3)>0) % r or a parameter
         r_opt_param = OptimizationParameter(MDHParamR(dvs(3)), 1, 'mdh_r_1');
         parameter_container.addParameter(r_opt_param);
     end
@@ -49,9 +47,6 @@ end
 num_dh_links = dcc_obj.num_DH_links;
 for i=1:num_dh_links
     
-    % These are assumed to be of size 4, since they are DH links
-    % we have them in the parameter file order of static->moving, but we
-    % want to add them in the order of moving->static
     idx_map = dcc_obj.link_struct(i+1).index_map;
     dvs = dcc_obj.link_struct(i+1).default_values;
     
@@ -66,7 +61,7 @@ for i=1:num_dh_links
         d_opt_param = OptimizationParameter(DHParamD(dvs(2)), 1, key);
         parameter_container.addParameter(d_opt_param);
     end
-    if(idx_map(3)>0) % r parameter
+    if(idx_map(3)>0) % r or a parameter
         key = strcat('dh_r_', int2str(i));
         r_opt_param = OptimizationParameter(DHParamR(dvs(3)), 1, key);
         parameter_container.addParameter(r_opt_param);
@@ -78,29 +73,29 @@ for i=1:num_dh_links
     end
 end
 
-% Add the last 6dof parameter block
+% Adds the transformation from base to static camera
 static_count = 1;
 for m=1+num_dh_links+1:length(dcc_obj.link_struct)
     link_struct = dcc_obj.link_struct(m);
     dvs = link_struct.default_values; % first one is the static camera
     idx_map = link_struct.index_map;
     if strcmp(link_struct.type,'4dof')
-        if(idx_map(1)>0) % alpha parameter
+        if(idx_map(1)>0) % rx parameter
             key = strcat('4dof_rx_', num2str(static_count));
             rx_opt_param = OptimizationParameter(Rx4DofParam(dvs(1)), 1, key);
             parameter_container.addParameter(rx_opt_param);
         end
-        if(idx_map(2)>0) % alpha parameter
+        if(idx_map(2)>0) % ry parameter
             key = strcat('4dof_ry_', num2str(static_count));
             ry_opt_param = OptimizationParameter(Ry4DofParam(dvs(2)), 1, key);
             parameter_container.addParameter(ry_opt_param);
         end
-        if(idx_map(3)>0) % alpha parameter
+        if(idx_map(3)>0) % tx parameter
             key = strcat('4dof_tx_', num2str(static_count));
             tx_opt_param = OptimizationParameter(Tx4DofParam(dvs(3)), 1, key);
             parameter_container.addParameter(tx_opt_param);
         end
-        if(idx_map(4)>0) % alpha parameter
+        if(idx_map(4)>0) % ty parameter
             key = strcat('4dof_ty_', num2str(static_count));
             ty_opt_param = OptimizationParameter(Ty4DofParam(dvs(4)), 1, key);
             parameter_container.addParameter(ty_opt_param);
@@ -116,7 +111,8 @@ for m=1+num_dh_links+1:length(dcc_obj.link_struct)
     static_count = static_count+1;
 end
 
-% Add each angle as the optimization parameter.
+% Adds each angle as the optimization parameter if flag is set. We do this
+% since we can separate out the dynamic parameters from the staic
 if dcc_obj.optimize_theta_flag && ~isempty(measurement_set)
     theta_flag_vec = dcc_obj.optimize_theta_flag_vec;
     for m=1:length(measurement_set)

@@ -1,7 +1,5 @@
 function T_WC_list = displaySimulationObject(sim_obj, encoder_angles, opt_problem)
-
-%% Description:
-% This function displays the simulation object and returns a vector cell of
+%% This function displays the simulation object and returns a vector cell of
 % the different camera to world transforms
 
 title_str = 'Dynamic Camera Cluster';
@@ -43,7 +41,7 @@ if isempty(opt_problem)
     opt_problem = setupOptimizationProblem(sim_obj, []);
 end
 
-% Plot the static cameras
+% Plots the static cameras
 for i=1:length(sim_obj.cameras)-1
     sim_obj.static_cam_key = strcat('T_S',num2str(i),'B');
     [~, transform_chain] = movingToStaticChain(opt_problem.parameter_container, encoder_angles, sim_obj);
@@ -54,7 +52,7 @@ for i=1:length(sim_obj.cameras)-1
     plotAxis(T_WS, 0.2, colors(color_num), strcat('s',num2str(i)))
 end
 
-% Set the first as the base to world.
+% Sets the first as the base to world.
 T_WDHlink = T_WB;
 for t=1:num_dh_links
     T_WDHlink = T_WDHlink*(transform_chain{end-t});
@@ -62,12 +60,12 @@ for t=1:num_dh_links
     plotAxis((T_WDHlink), 0.2, colors(color_num),joint_names{t});
 end
 
-% Plot Gimbal camera
+% Plots Gimbal camera
 color_num = color_num+1;
 T_WG = T_WDHlink*(transform_chain{1});
 plotAxis(T_WG, 0.3, colors(color_num),'d')
 
-% Get all the transforms from cameras to world
+% Gets all the transforms from cameras to world
 T_WC_list = [{T_WG} T_WS_list];
 
 if isfield(sim_obj,'target_pts_world')

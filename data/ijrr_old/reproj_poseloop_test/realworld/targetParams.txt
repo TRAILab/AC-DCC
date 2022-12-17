@@ -1,7 +1,0 @@
-% Target parameters (Assume chessboard)
-sqSize:
-0.10
-width:
-20
-height
-10

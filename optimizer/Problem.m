@@ -1,7 +1,5 @@
 classdef Problem<handle
-    
-    %% Description
-    % This file holds the entire optimization problem along with the
+    %% This file holds the entire optimization problem along with the
     % necessary information and variables needed to perform the
     % optimization
     
@@ -77,6 +75,7 @@ classdef Problem<handle
         end
         
         function [calib_error] = addDCCPoseLoopResidual(obj, meas_struct, dcc_obj)
+            % Pose loop error formulation.
             [residual_vector, J_total, calib_error] = DCCPoseLoopResidual(obj.parameter_container, meas_struct, dcc_obj);
             
             % Rearrange Jacobian. Because it doesnt account for which
@@ -91,6 +90,7 @@ classdef Problem<handle
         end
          
         function [update_delta, success] = solveLinearSystem(obj)
+            % Solves the linear system
             if strcmp(obj.opt_params.opt_type, 'GN')
                 H = obj.J'*obj.J;
                 obj.g = -obj.J'*obj.r;
@@ -148,8 +148,8 @@ classdef Problem<handle
                             success = 1;
                             return;
                         end
-                        %obj.lambda
-                        %max(1/3, 1-(2*ro-1)^3)
+                        % obj.lambda
+                        % max(1/3, 1-(2*ro-1)^3)
                         obj.lambda = obj.lambda * max(1/3, 1-(2*ro-1)^3);
                         obj.nu = 2;
                         A = A + obj.lambda*eye(size(A));
@@ -288,6 +288,7 @@ classdef Problem<handle
         end
         
         function update_delta = getUpdateDelta(obj, A, b, option_flag)
+            % Gets the update delta
             if option_flag == 1
                 A_sparse = sparse(A);
                 L = chol(A_sparse,'lower');
@@ -319,6 +320,7 @@ classdef Problem<handle
         end
         
         function state_vec = getState(obj)
+            % Returns the state of the object
             pl = obj.parameter_container.parameter_list;
             state_vec = [];
             for i=1:length(pl)
@@ -332,6 +334,7 @@ classdef Problem<handle
         end
         
         function [] = updateParameters(obj, system_update_delta)
+            % Updates the parmaters based on the delta value
             num_parameters = length(obj.parameter_container.parameter_list);
             for i=1:num_parameters
                 param_block_size = obj.parameter_container.parameter_list{i}.tangentspace_dim;
@@ -342,11 +345,13 @@ classdef Problem<handle
         end
         
         function cov = getSystemCovariance(obj)
+            % Get the system covariance
             H = obj.J'*obj.J;
             cov = inv(H);
         end
         
         function [] = clearLinearSystem(obj)
+            % Clean the linear system
             obj.r = [];
             obj.J = [];
             obj.g = [];

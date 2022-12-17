@@ -1,16 +1,14 @@
 function [T_SM, transform_chain] = movingToStaticChain(parameter_container, joint_angles, dcc_obj)
-
-%% Description
-% This function returns the transformation from moving camera to static
+%% This function returns the transformation from dynamic camera to static
 % camera based on the static camera key. 
-% It also returns individual transformation matrics starting from the 
-% moving camera eg T_J3M, T_J2J3, T_BJ2, T_SB
+% It also returns individual transformation matrics for each link starting 
+% from the dynamic camera.
 
 num_dh_links = dcc_obj.num_DH_links;
 transform_chain = {}; % keep track of all transforms;
 
-% Get the transformation parameters for the first 6-DOF transform between
-% the moving camera and J3.
+% Gets the transformation parameters from dynamic camera to previous joint
+% based on the parameterization used
 if strcmp(dcc_obj.link_struct(1).type,'mdh')
     link_opt = dcc_obj.link_struct(1); % plus one because first link is 6dof transform
     dv = link_opt.default_values;
@@ -19,7 +17,7 @@ if strcmp(dcc_obj.link_struct(1).type,'mdh')
     if(link_opt.index_map(2)>0) % d
         link_d = parameter_container.getKeyValue('mdh_d_1');
     end
-    if(link_opt.index_map(3)>0) % a
+    if(link_opt.index_map(3)>0) % a (also known as r parameter)
         link_a = parameter_container.getKeyValue('mdh_r_1');
     end
     if(link_opt.index_map(4)>0) % alpha
@@ -32,15 +30,15 @@ if strcmp(dcc_obj.link_struct(1).type,'mdh')
         link_y = parameter_container.getKeyValue('mdh_y_1');
     end
     
-    % Add offset to joint angles
+    % Adds offset to joint angles
     theta_corrected = link_theta + link_opt.offset;
     
-    % compute the transformation between this and the next joint.
+    % Computes the transformation from dynamic camera to previous joint
     T_J3M = generateModifiedDHMatrix(theta_corrected, link_d, link_a, link_alpha, link_beta, link_y);
     transform_chain{1} = T_J3M;
     
 elseif strcmp(dcc_obj.link_struct(1).type,'6dof')  
-    T_J3M = parameter_container.getKeyValue('T_EM'); % 6 dof from moving camera to end effector
+    T_J3M = parameter_container.getKeyValue('T_EM');
     transform_chain{1} = T_J3M;
 end
 
@@ -60,23 +58,23 @@ for k=1:num_dh_links
     if(link_opt.index_map(2)>0) % d
         link_d = parameter_container.getKeyValue(strcat('dh_d_',num2str(k)));
     end
-    if(link_opt.index_map(3)>0) % a
+    if(link_opt.index_map(3)>0) % a or r parameter
         link_a = parameter_container.getKeyValue(strcat('dh_r_',num2str(k)));
     end
     if(link_opt.index_map(4)>0) % alpha
         link_alpha = parameter_container.getKeyValue(strcat('dh_alpha_',num2str(k)));
     end
     
-    % Add offset to joint angles
+    % Adds offset to joint angles
     theta_corrected = link_theta + link_opt.offset;
     
-    %compute the transformation between this and the next joint.
+    % Computes the transformation between this and the next joint.
     T_Qk_Qkp1 = generateDHMatrix(theta_corrected, link_d, link_a, link_alpha);
     T_BJ3 = T_Qk_Qkp1 * T_BJ3;
     transform_chain{end+1} = T_Qk_Qkp1;
 end
 
-% Get the information on which static camera to process
+% Gets the information on which static camera to process
 static_cam_key = dcc_obj.static_cam_key;
 static_cam_num_str = static_cam_key(end-1);
 link_opt = dcc_obj.link_struct(1 + dcc_obj.num_DH_links + str2double(static_cam_num_str));
@@ -110,6 +108,5 @@ else
     
 end
 
-% Add the 6 DOF transforms. Transformation from static camera to moving camera
+% Get the entire transformation from dynamic camera to static camera
 T_SM = T_SB * T_BJ3 * T_J3M;
-end

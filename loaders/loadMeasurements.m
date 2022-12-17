@@ -1,7 +1,5 @@
 function [measurement_set, dcc_obj] = loadMeasurements(dcc_obj)
-
-%% Description
-% This function loads the text files (measurements) for calibration
+%% Loads the text files (measurements) for calibration
 
 num_measurements = dcc_obj.num_measurements;
 
@@ -32,7 +30,7 @@ for meas_num = 1:num_measurements
         continue;
     end
     
-    % Get the single measurement set
+    % Gets single measurement set
     single_measurement_set = loadDataGroup(meas_num, cameras, dcc_obj.data_files);
     
     % Group all the errors together

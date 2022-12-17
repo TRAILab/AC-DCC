@@ -1,12 +1,11 @@
 function showObjAndPix(sim_obj, encoder_angles)
-
-%% Description:
-% This function displays the object and pixel location on the image plane
+%% This function displays the object and pixel location on the image plane
 
 % Store Variables
 target_pts_world = sim_obj.target_pts_world;
 encoder_angles_rad = encoder_angles;
 
+% Sets up the optimization problem
 opt_problem = setupOptimizationProblem(sim_obj, []);
 
 for i=1:size(encoder_angles_rad,1)
@@ -33,7 +32,8 @@ for i=1:size(encoder_angles_rad,1)
         
         % This is mainly for debug purposes, to see which 3D points the
         % gimbal actually sees
-        if j==1 % we want to see what the target points that the gimbal sees
+        % We want to see what the target points that the gimbal sees
+        if j==1 
             debug_pts_seen_in_gimbal = cam_indices_on_plane;
         end
     end
@@ -43,7 +43,7 @@ for i=1:size(encoder_angles_rad,1)
     hold on;
     scatter3(target_pts_world(debug_pts_seen_in_gimbal,1), target_pts_world(debug_pts_seen_in_gimbal,2), target_pts_world(debug_pts_seen_in_gimbal,3), 'filled','r');
     
-    % Display all pixels in single plot
+    % Displays all pixels in single plot
     if isempty(findobj('type','figure','name','all_pixels'))
         figure('Name','all_pixels');
     else
