@@ -30,7 +30,7 @@ opt_params.success = 0;
 opt_params.opt_type = 'LM2'; % Options: GN, LM1, LM2
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/other_experiments/single_cam_new_param/';
+data_files.folder_path = 'data/other_experiments/four_joint/';
 data_files.measurement_type = 'train/';
 data_files.real_image_path = strcat(data_files.folder_path,'train_real_images/');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt'); % DCC relation in the world
@@ -70,8 +70,9 @@ opt_problem.opt_params = opt_params;
 % Display the DCC object
 dcc_obj.caz = 0;
 dcc_obj.cel = 0;
-disp('Showing DCC configuration at [0 0 0] angles');
-[~] = displaySimulationObject(dcc_obj, [0 0 0], opt_problem);
+disp('Showing DCC configuration at zero angles');
+total_angles = getTotalAngles(dcc_obj.link_struct);
+[~] = displaySimulationObject(dcc_obj, zeros(1,length(dcc_obj.optimize_theta_flag_vec)), opt_problem);
 [caz,cel] = view;
 dcc_obj.caz = caz;
 dcc_obj.cel = cel;

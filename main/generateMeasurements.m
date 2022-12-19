@@ -24,15 +24,16 @@ use_random_pts = 1;                     % Use random points in the environment (
 angle_type = 'random';                  % Type of angles we want, (linear, random)
 num_random_angles = 50;                 % Number of random angles if random angle type
 last_index = 0;
-joint_limits = [-120 30;           % Angle Limits from which to collect measurements (deg). This should be a Nx2, where N = num of joints 
-                -20 20;           % First set represents the limits of the joint closest to the moving camera
-                -150 180];        
+joint_limits = [-180 180;
+                -180 180;
+                -180 180;
+                -180 180];        
 num_linear_angles_per_joint = [3;3;4];  % Number of angles per joint to collect measurements if linear angle type. This should be an Nx1 where N = num of joints.   
 move_base = 0;                          % Decide if you want to move the drone
 target_pts_filename = 'noisy_cube.mat';         % This is the file that stores the target points
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/other_experiments/single_cam_new_param/';
+data_files.folder_path = 'data/other_experiments/four_joint/';
 data_files.measurement_type = 'train/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
@@ -78,7 +79,7 @@ end
 if(strcmp('random', angle_type))
     disp('Generating angle set for random spacing:');
     
-    measurement_angle_set_deg = zeros(num_random_angles, sim_obj.num_DH_links);
+    measurement_angle_set_deg = zeros(num_random_angles, length(sim_obj.optimize_theta_flag_vec));
     for i=1:size(joint_limits,1)
         measurement_angle_set_deg(:,i) = (joint_limits(i,2)-joint_limits(i,1)).*rand(num_random_angles,1) + joint_limits(i,1);
     end

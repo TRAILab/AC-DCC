@@ -19,7 +19,7 @@ use_random_pts = 0;                     % Use random points in the environment (
 target_pts_filename = 'noisy_cube.mat';         % This is the file that stores the target points
 
 % Data location #################################### <--- Important to go through each of these and modify the values
-data_files.folder_path = 'data/other_experiments/single_cam_new_param/';
+data_files.folder_path = 'data/other_experiments/four_joint/';
 data_files.sensors_file_path = strcat(data_files.folder_path,'sensorParams.txt');
 data_files.transforms_file_path = strcat(data_files.folder_path,'transforms.txt');
 data_files.target_file_path = strcat(data_files.folder_path,'targetParams.txt');

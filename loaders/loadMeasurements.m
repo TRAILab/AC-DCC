@@ -106,12 +106,20 @@ for i=1:length(dcc_obj.cameras)
 end
 
 % Plot the encoder angles
-callFigure('Encoder Measurements');
-dcc_obj.encoder_collection = rad2deg(dcc_obj.encoder_collection);
-scatter3(dcc_obj.encoder_collection(:,1), dcc_obj.encoder_collection(:,2), dcc_obj.encoder_collection(:,3), 'r', 'filled');
-xlabel('Pitch');
-ylabel('Roll');
-zlabel('Yaw');
-title('Encoder angles in measurements');
+if length(dcc_obj.optimize_theta_flag_vec)<=3
+    callFigure('Encoder Measurements');
+    dcc_obj.encoder_collection = rad2deg(dcc_obj.encoder_collection);
+    if size(dcc_obj.encoder_collection,2) == 1
+        dcc_obj.encoder_collection(:,2) = zeros(length(dcc_obj.encoder_collection),1);
+        dcc_obj.encoder_collection(:,3) = zeros(length(dcc_obj.encoder_collection),1);
+    elseif size(dcc_obj.encoder_collection,2) == 2
+        dcc_obj.encoder_collection(:,3) = zeros(length(dcc_obj.encoder_collection),1);
+    end
+    scatter3(dcc_obj.encoder_collection(:,1), dcc_obj.encoder_collection(:,2), dcc_obj.encoder_collection(:,3), 'r', 'filled');
+    xlabel('Joint 1');
+    ylabel('Joint 2');
+    zlabel('Joint 3');
+    title('Encoder angles in measurements');
+end
 
 opt_problem.good_meas_idxs = setdiff(1:num_measurements, dcc_obj.bad_meas_idxs);

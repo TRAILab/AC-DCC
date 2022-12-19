@@ -43,6 +43,8 @@ elseif(length(raw_encoder_angles)==2)
     fprintf(fileID,'%.10f %.10f\n',raw_encoder_angles(1,:));
 elseif(length(raw_encoder_angles)==3)
     fprintf(fileID,'%.10f %.10f %.10f\n',raw_encoder_angles(1,:));
+elseif(length(raw_encoder_angles)==4)
+    fprintf(fileID,'%.10f %.10f %.10f %.10f\n',raw_encoder_angles(1,:));
 end
 
 fprintf(fileID,'\n');
